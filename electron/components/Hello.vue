@@ -1,6 +1,7 @@
 <!-- src/components/Hello.vue -->
 <template>
     <div>
+        <div><p>Contents from Hello.vue</p></div>
         <div class="greeting">Hello {{name}}{{exclamationMarks}}</div>
         <button @click="decrement">-</button>
         <button @click="increment">+</button>

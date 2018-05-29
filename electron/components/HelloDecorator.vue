@@ -2,6 +2,7 @@
 <!-- This is an alternative way to define the Hello component using decorators -->
 <template>
     <div>
+        <div><p>Contents from HelloDecorator.vue</p></div>
         <div class="greeting">Hello {{name}}{{exclamationMarks}}</div>
         <button @click="decrement">-</button>
         <button @click="increment">+</button>
