@@ -1,18 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES6",
-    "module": "commonjs",
+    "outDir": "./built/",
     "sourceMap": true,
-    "allowJs": true,
-    "rootDir": "src",
-    "outDir": "build",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "strict": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "target": "es5",
+    "experimentalDecorators": true
   },
   "include": [
-    "electron/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
+    "./electron/**/*",
+    "./node_modules/@types/**/*"
   ]
 }
