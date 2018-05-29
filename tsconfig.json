@@ -10,7 +10,7 @@
     "emitDecoratorMetadata": true
   },
   "include": [
-    "src/**/*.ts"
+    "electron/**/*.ts"
   ],
   "exclude": [
     "node_modules"
