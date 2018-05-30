@@ -63,3 +63,5 @@ typings/
 .idea
 
 built
+
+golang/src/diadust/vendor
