@@ -10,6 +10,8 @@
 * ---
 * 如何使用npm预安装imagemagick之类的软件
 * 在当前照片图库中进行深度学习，根据当前的图片内容及tag，对后续的照片进行自动化猜测tag
+* 使用golang的库进行重复图片识别
+* 人脸识别解锁？face id？https://blog.machinebox.io/introducing-web-face-id-how-to-use-html5-go-and-facebox-to-verify-your-face-b75cf2aee5e8
 
 ## VueJs
 
@@ -38,7 +40,7 @@
 * https://github.com/golang/go/wiki/PackageManagementTools go package management
 * https://github.com/golang/go/issues/24301 latest version proposal
 * https://github.com/golang/vgo version go
-* https://github.com/golang/dep dependency management tool official
+* https://github.com/golang/dep https://gocn.vip/article/414 dependency management tool official
 
 ## Golang
 
