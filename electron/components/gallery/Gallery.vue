@@ -12,21 +12,21 @@
 </style>
 
 <script lang="ts">
-import { Vue, Component, Prop } from "vue-property-decorator";
+    import {Component, Vue} from "vue-property-decorator";
 
-import {State} from './Store';
+    import {State} from './Store';
 
-@Component
-export default class Gallery extends Vue {
-    private state: State;
+    @Component
+    export default class Gallery extends Vue {
+        private state: State;
 
-    constructor() {
-        super();
-        this.state = (this.$store.state as any).Gallery;
+        constructor() {
+            super();
+            this.state = (this.$store.state as any).Gallery;
+        }
+
+        mounted() {
+            this.$store.dispatch('fetchImages').then(_ => console.log(this.state));
+        }
     }
-
-    mounted() {
-        this.$store.dispatch('applyFilter').then(_ => console.log(this.state));
-    }
-}
 </script>

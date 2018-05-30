@@ -8,12 +8,12 @@ export interface State {
 }
 
 // Mutations
-const resetImages: Mutation<State> = function(state: State, payload: Array<Image.AsObject>) {
+const resetImages: Mutation<State> = function (state: State, payload: Array<Image.AsObject>) {
     state.images = payload;
 };
 
 // Actions
-const applyFilter: Action<State, {}> = async function(context: ActionContext<State, {}>, payload?: Filter): Promise<any> {
+const fetchImages: Action<State, {}> = async function (context: ActionContext<State, {}>, payload: Filter): Promise<any> {
     // FIXME dummy implementation
     return new Promise(resolve => {
         setInterval(() => {
@@ -57,7 +57,7 @@ export const Store: Module<State, {}> = {
         resetImages
     },
     actions: {
-        applyFilter
+        fetchImages
     }
 };
 
