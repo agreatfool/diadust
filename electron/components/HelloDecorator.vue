@@ -10,14 +10,12 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from "vue-property-decorator";
+import { Vue, Component, Prop, Provide } from "vue-property-decorator";
 
 @Component
 export default class HelloDecorator extends Vue {
-    @Prop() name!: string;
-    @Prop() initialEnthusiasm!: number;
-
-    enthusiasm = this.initialEnthusiasm;
+    @Provide() name = 'World';
+    @Provide() enthusiasm = 1;
 
     increment() {
         this.enthusiasm++;
