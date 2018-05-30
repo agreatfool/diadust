@@ -6,7 +6,8 @@
     "module": "es2015",
     "moduleResolution": "node",
     "target": "es5",
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "lib": ["ES2015", "DOM"]
   },
   "include": [
     "./electron/**/*",

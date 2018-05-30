@@ -1,6 +1,9 @@
 <template>
     <div>
         <h2>This is gallery</h2>
+        <div v-for="image in this.state.images">
+            {{JSON.stringify(image)}}
+        </div>
     </div>
 </template>
 
@@ -23,7 +26,7 @@ export default class Gallery extends Vue {
     }
 
     mounted() {
-        console.log(this.state);
+        this.$store.dispatch('applyFilter').then(_ => console.log(this.state));
     }
 }
 </script>
