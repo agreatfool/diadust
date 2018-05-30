@@ -65,3 +65,4 @@ typings/
 built
 
 golang/src/diadust/vendor
+golang/pkg
