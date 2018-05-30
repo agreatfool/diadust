@@ -39,3 +39,14 @@
 * https://github.com/golang/go/issues/24301 latest version proposal
 * https://github.com/golang/vgo version go
 * https://github.com/golang/dep dependency management tool official
+
+## Golang
+
+* https://github.com/rivo/duplo duplicate images detection
+
+## Dummy
+
+```
+$ protoc --version
+libprotoc 3.3.0
+```
