@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package diadust;
+
+message Image {
+    int32 id = 1; // imageId in db
+    string uuid = 2; // reformatted filename
+    string original_name = 3; // original filename
+    string path = 4; // relative file path
+    repeated int32 tags = 5; // tag ids: [2,5,12]
+    int32 created = 6; // record created timestamp
+}
+
+message ImageHash {
+    int32 id = 1; // mapping to "Image.id"
+    string hash = 2; // uses truncated Haar wavelet transforms to create visual hash of the image
+}
+
+message Tag {
+    int32 id = 1; // tagId in db
+    string name = 2; // tag name
+}
