@@ -1,6 +1,6 @@
 import {Action, ActionContext, Module, Mutation} from "vuex";
 
-import {Image} from '../../rpc/diadust_pb';
+import {Image} from '../../rpc/proto/diadust_pb';
 
 // State
 export interface State {
