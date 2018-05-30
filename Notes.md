@@ -13,7 +13,7 @@
 
 ## VueJs
 
-* https://segmentfault.com/a/1190000011744210 sample
+* https://segmentfault.com/a/1190000011744210 起手sample
 * https://www.npmjs.com/package/vue-property-decorator
 * https://www.cnblogs.com/crazycode2/p/7821389.html vue-property-decorator 提供 OO 的风格 Vue Component 方便类型声明
 
