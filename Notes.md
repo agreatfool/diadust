@@ -48,7 +48,13 @@
 
 ## Dummy
 
-```
 $ protoc --version
 libprotoc 3.3.0
-```
+
+go grpc的protoc插件仍旧需要使用全局GOPATH的方式来安装，否则没办法进行命令行直接执行
+go get -u github.com/golang/protobuf/protoc-gen-go
+
+protoc \
+--go_out=plugins=grpc:./dest_dir \
+-I ./proto \
+./proto/*.proto
