@@ -2,12 +2,15 @@ syntax = "proto3";
 
 package diadust;
 
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+// Models
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 message Image {
     int32 id = 1; // imageId in db
     string uuid = 2; // reformatted filename
     string original_name = 3; // original filename
     string path = 4; // relative file path
-    repeated int32 tags = 5; // tag ids: [2,5,12]
+    repeated int32 tag = 5; // tag ids: [2,5,12]
     int32 created = 6; // record created timestamp
 }
 
@@ -19,4 +22,34 @@ message ImageHash {
 message Tag {
     int32 id = 1; // tagId in db
     string name = 2; // tag name
+}
+
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+// Types
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+message Filter {
+    repeated string name = 1; // search by names
+    repeated string no_name = 2; // search result shall not include names
+    repeated int32 tag = 3; // search by tags
+    repeated int32 no_tag = 4; // search result shall not include tags
+    FilterOrderType order_type = 5; // order type
+    FilterOrder order = 6; // order
+}
+
+enum FilterOrderType {
+    CREATED = 0; // record created
+    SIZE = 1; // file size
+    RESOLUTION = 2; // image resolution
+}
+
+enum FilterOrder {
+    DESC = 0;
+    ASC = 1;
+}
+
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+// Rpcs
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+service ImageService {
+    rpc fetchImages (Filter) returns (stream Image) {}
 }

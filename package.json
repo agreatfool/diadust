@@ -7,7 +7,8 @@
     "start": "electron ./electron/index.html",
     "test": "echo \"Error: no test specified\" && exit 1",
     "webpack": "webpack",
-    "noderpc": "./bash/node_protoc.sh"
+    "noderpc": "./bash/node_protoc.sh",
+    "gorpc": "./bash/go_protoc.sh"
   },
   "repository": {
     "type": "git",
