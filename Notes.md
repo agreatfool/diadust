@@ -58,3 +58,5 @@ protoc \
 --go_out=plugins=grpc:./dest_dir \
 -I ./proto \
 ./proto/*.proto
+
+npm install grpc_tools_node_protoc_ts@2.3.0 -g
