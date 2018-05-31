@@ -5,11 +5,18 @@ import (
 	"log"
 	"google.golang.org/grpc"
 	pb "diadust/diadust"
+	"fmt"
+)
+
+const (
+	PORT = ":50051"
 )
 
 type server struct{}
 
-func (s *server) FetchImages(rect *pb.Filter, stream pb.ImageService_FetchImagesServer) error {
+func (s *server) FetchImages(filter *pb.Filter, stream pb.ImageService_FetchImagesServer) error {
+	log.Printf("FetchImages, filter: %s", fmt.Sprintf("%+v\n", filter))
+
 	images := []*pb.Image{
 		{Id:1, Uuid:"uuid1", OriginalName:"originalname1", Path:"path1", Tag:[]int32{1,2,3}, Created:123},
 		{Id:2, Uuid:"uuid2", OriginalName:"originalname2", Path:"path2", Tag:[]int32{1,2,3}, Created:123},
@@ -19,7 +26,9 @@ func (s *server) FetchImages(rect *pb.Filter, stream pb.ImageService_FetchImages
 	}
 
 	for _, img := range images {
+		log.Printf("FetchImages, sending: %s", fmt.Sprintf("%+v\n", img))
 		if err := stream.Send(img); err != nil {
+			log.Fatalf("FetchImages, failed to send: %v", err)
 			return err
 		}
 	}
@@ -27,13 +36,14 @@ func (s *server) FetchImages(rect *pb.Filter, stream pb.ImageService_FetchImages
 }
 
 func main() {
-	lis, err := net.Listen("tcp", ":50051")
+	lis, err := net.Listen("tcp", PORT)
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		log.Fatalf("main, failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
 	pb.RegisterImageServiceServer(s, &server{})
+	log.Printf("main, start listing on%s", PORT)
 	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+		log.Fatalf("main, failed to serve: %v", err)
 	}
 }
