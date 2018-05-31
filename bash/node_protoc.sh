@@ -3,6 +3,8 @@
 BASEDIR=$(dirname "$0")
 cd ${BASEDIR}/../
 
+CMD=`which protoc-gen-ts`
+
 grpc_tools_node_protoc \
 --js_out=import_style=commonjs,binary:./electron/rpc/proto \
 --grpc_out=./electron/rpc/proto \
@@ -10,7 +12,7 @@ grpc_tools_node_protoc \
 -I ./proto \
 ./proto/*.proto &&
 protoc \
---plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts \
+--plugin=protoc-gen-ts=${CMD} \
 --ts_out=./electron/rpc/proto \
 -I ./proto \
 ./proto/*.proto
