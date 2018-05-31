@@ -1,16 +1,16 @@
 package main
 
 import (
-	"log"
 	"net"
+	"log"
 	"google.golang.org/grpc"
-	pb "./rpc"
+	pb "diadust/diadust"
 )
 
 type server struct{}
 
 func (s *server) FetchImages(rect *pb.Filter, stream pb.ImageService_FetchImagesServer) error {
-	images := [...]*pb.Image{
+	images := []*pb.Image{
 		{Id:1, Uuid:"uuid1", OriginalName:"originalname1", Path:"path1", Tag:[]int32{1,2,3}, Created:123},
 		{Id:2, Uuid:"uuid2", OriginalName:"originalname2", Path:"path2", Tag:[]int32{1,2,3}, Created:123},
 		{Id:3, Uuid:"uuid3", OriginalName:"originalname3", Path:"path3", Tag:[]int32{1,2,3}, Created:123},

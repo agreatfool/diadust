@@ -66,3 +66,4 @@ built
 
 golang/src/diadust/vendor
 golang/pkg
+golang/bin
