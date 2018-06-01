@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 
 const pkg = require('../../package.json');
 
-export async function post(uri, data: {[key: string]: any}) {
+export async function post(uri: string, data: {[key: string]: any}) {
     return new Promise((resolve, reject) => {
         fetch(LibUrl.resolve('http://127.0.0.1:13000', uri), {
             method: 'POST',
