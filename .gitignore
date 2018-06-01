@@ -63,6 +63,7 @@ typings/
 .idea
 
 built
+build
 
 golang/src/diadust/vendor
 golang/pkg
