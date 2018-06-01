@@ -1,19 +1,20 @@
 import {Action, ActionContext, Module, Mutation} from "vuex";
 
-import {Image} from '../../rpc/proto/diadust_pb';
+import {Image} from '../../message/model/Image';
+import {ImageSearchFilter} from '../../message/model/Query';
 
 // State
 export interface State {
-    images: Array<Image.AsObject>;
+    images: Array<Image>;
 }
 
 // Mutations
-const resetImages: Mutation<State> = function (state: State, payload: Array<Image.AsObject>) {
+const resetImages: Mutation<State> = function (state: State, payload: Array<Image>) {
     state.images = payload;
 };
 
 // Actions
-const fetchImages: Action<State, {}> = async function (context: ActionContext<State, {}>, payload: Filter): Promise<any> {
+const fetchImages: Action<State, {}> = async function (context: ActionContext<State, {}>, payload: ImageSearchFilter): Promise<any> {
     // FIXME dummy implementation
     return new Promise(resolve => {
         setInterval(() => {
@@ -60,9 +61,3 @@ export const Store: Module<State, {}> = {
         fetchImages
     }
 };
-
-// Others
-export interface Filter {
-    name?: string;
-    // ...
-}
