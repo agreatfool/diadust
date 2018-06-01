@@ -26,7 +26,7 @@
         }
 
         mounted() {
-            this.$store.dispatch('fetchImages').then(_ => console.log(this.state));
+            this.$store.dispatch('fetchImages').then(_ => _);
         }
     }
 </script>

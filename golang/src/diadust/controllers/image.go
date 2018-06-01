@@ -26,6 +26,14 @@ func (this *ImageController) Fetch() {
 	}
 	beego.Debug(fmt.Sprintf("%+v", filter))
 
-	this.Data["json"] = &Person{Name: "Jonathan", Age: 23}
+	images := []models.Image{
+		{Id: 1, Uuid: "uuid1", OriginalName: "OriginalName1", Path: "Path1", Tags: []int{1,2,3}, Created: 123},
+		{Id: 2, Uuid: "uuid2", OriginalName: "OriginalName1", Path: "Path1", Tags: []int{1,2,3}, Created: 123},
+		{Id: 3, Uuid: "uuid3", OriginalName: "OriginalName1", Path: "Path1", Tags: []int{1,2,3}, Created: 123},
+		{Id: 4, Uuid: "uuid4", OriginalName: "OriginalName1", Path: "Path1", Tags: []int{1,2,3}, Created: 123},
+		{Id: 5, Uuid: "uuid5", OriginalName: "OriginalName1", Path: "Path1", Tags: []int{1,2,3}, Created: 123},
+	}
+
+	this.Data["json"] = images
 	this.ServeJSON()
 }
