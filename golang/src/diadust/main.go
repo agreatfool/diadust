@@ -1,49 +1,59 @@
 package main
 
 import (
-	"net"
 	"log"
-	"google.golang.org/grpc"
-	pb "diadust/diadust"
-	"fmt"
+	"net/http"
+	"time"
+	"github.com/gorilla/websocket"
 )
 
 const (
-	PORT = ":50051"
+	address = "127.0.0.1:13000"
+
+	// Time allowed to write a message to the peer.
+	writeWait = 10 * time.Second
+
+	// Maximum message size allowed from peer.
+	maxMessageSize = 8 * 1024
 )
 
-type server struct{}
+func internalError(ws *websocket.Conn, msg string, err error) {
+	log.Println(msg, err)
+	ws.WriteMessage(websocket.TextMessage, []byte("Internal server error."))
+}
 
-func (s *server) FetchImages(filter *pb.Filter, stream pb.ImageService_FetchImagesServer) error {
-	log.Printf("FetchImages, filter: %s", fmt.Sprintf("%+v\n", filter))
+var upgrader = websocket.Upgrader{}
 
-	images := []*pb.Image{
-		{Id:1, Uuid:"uuid1", OriginalName:"originalname1", Path:"path1", Tag:[]int32{1,2,3}, Created:123},
-		{Id:2, Uuid:"uuid2", OriginalName:"originalname2", Path:"path2", Tag:[]int32{1,2,3}, Created:123},
-		{Id:3, Uuid:"uuid3", OriginalName:"originalname3", Path:"path3", Tag:[]int32{1,2,3}, Created:123},
-		{Id:4, Uuid:"uuid4", OriginalName:"originalname4", Path:"path4", Tag:[]int32{1,2,3}, Created:123},
-		{Id:5, Uuid:"uuid5", OriginalName:"originalname5", Path:"path5", Tag:[]int32{1,2,3}, Created:123},
+func serveWs(w http.ResponseWriter, r *http.Request) {
+	ws, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println("Upgrade:", err)
+		return
 	}
+	ws.SetReadLimit(maxMessageSize)
+	ws.SetWriteDeadline(time.Now().Add(writeWait))
 
-	for _, img := range images {
-		log.Printf("FetchImages, sending: %s", fmt.Sprintf("%+v\n", img))
-		if err := stream.Send(img); err != nil {
-			log.Fatalf("FetchImages, failed to send: %v", err)
-			return err
+	defer log.Println("serveWs exiting ...")
+	defer ws.Close()
+
+	for {
+		msgtype, message, err := ws.ReadMessage()
+		if err != nil {
+			internalError(ws, "serveWs:", err)
+			break
+		}
+
+		switch msgtype {
+		case websocket.TextMessage:
+			log.Printf("msgtype: text, message: %v\n", string(message[:]))
+		default:
+			log.Printf("serveWs: ReadMessage: invalid type: %d", msgtype)
 		}
 	}
-	return nil
 }
 
 func main() {
-	lis, err := net.Listen("tcp", PORT)
-	if err != nil {
-		log.Fatalf("main, failed to listen: %v", err)
-	}
-	s := grpc.NewServer()
-	pb.RegisterImageServiceServer(s, &server{})
-	log.Printf("main, start listing on%s", PORT)
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("main, failed to serve: %v", err)
-	}
+	http.HandleFunc("/ws", serveWs)
+	log.Printf("Start listening on: %s\n", address)
+	log.Fatal(http.ListenAndServe(address, nil))
 }
