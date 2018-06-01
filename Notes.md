@@ -1,7 +1,7 @@
 ## TODO
 
-* 使用vue + router + vuex + webpack做一个初始启动项目
-* 制作一个很简单的go服务器，使用grpc能够和electron通讯
+* 使用vue + router + vuex + webpack做一个初始启动项目 √
+* 制作一个很简单的go服务器，使用grpc能够和electron通讯 √
 * 尝试打包，将所有东西做成一个可执行软件
 * ---
 * 测试图片格子库的显示性能
