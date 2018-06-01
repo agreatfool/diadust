@@ -8,12 +8,12 @@ export interface ImageSearchFilter {
 }
 
 export enum FilterOrderType {
-    CREATED,    // record created
-    SIZE,       // file size
-    RESOLUTION, // image resolution
+    CREATED = 'CREATED',        // record created
+    SIZE = 'SIZE',              // file size
+    RESOLUTION = 'RESOLUTION',  // image resolution
 }
 
 export enum FilterOrder {
-    DESC,
-    ASC,
+    DESC = 'DESC',
+    ASC = 'ASC',
 }
