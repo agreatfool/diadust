@@ -1,5 +1,4 @@
 import * as WS from 'ws';
-import * as msgpack from 'msgpack-lite';
 
 export class Socket {
 
