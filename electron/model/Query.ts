@@ -7,13 +7,13 @@ export interface ImageSearchFilter {
     order: FilterOrder;             // order
 }
 
-enum FilterOrderType {
+export enum FilterOrderType {
     CREATED,    // record created
     SIZE,       // file size
     RESOLUTION, // image resolution
 }
 
-enum FilterOrder {
+export enum FilterOrder {
     DESC,
     ASC,
 }
