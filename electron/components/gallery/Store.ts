@@ -1,7 +1,7 @@
 import {Action, ActionContext, Module, Mutation} from "vuex";
 
-import {Image} from '../../message/model/Image';
-import {ImageSearchFilter} from '../../message/model/Query';
+import {Image} from '../../model/Image';
+import {ImageSearchFilter} from '../../model/Query';
 
 // State
 export interface State {

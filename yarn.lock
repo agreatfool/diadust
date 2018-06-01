@@ -2,24 +2,9 @@
 # yarn lockfile v1
 
 
-"@types/events@*":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@types/events/-/events-1.2.0.tgz#81a6731ce4df43619e5c8c945383b3e62a89ea86"
-
-"@types/node@*":
-  version "10.3.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.3.0.tgz#078516315a84d56216b5d4fed8f75d59d3b16cac"
-
 "@types/node@8.10.17", "@types/node@^8.0.24":
   version "8.10.17"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.17.tgz#d48cf10f0dc6dcf59f827f5a3fc7a4a6004318d3"
-
-"@types/ws@5.1.1":
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/@types/ws/-/ws-5.1.1.tgz#4adc1f1a5e92e7e0e95658fb35c7eab1bc52f4ac"
-  dependencies:
-    "@types/events" "*"
-    "@types/node" "*"
 
 abbrev@1:
   version "1.1.1"
@@ -175,10 +160,6 @@ assign-symbols@^1.0.0:
 async-each@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/async-each/-/async-each-1.0.1.tgz#19d386a1d9edc6e7c1c85d388aedbcc56d33602d"
-
-async-limiter@~1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/async-limiter/-/async-limiter-1.0.0.tgz#78faed8c3d074ab81f22b4e985d79e8738f720f8"
 
 async-validator@~1.8.1:
   version "1.8.2"
@@ -3490,12 +3471,6 @@ wrap-ansi@^2.0.0:
 wrappy@1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
-
-ws@5.2.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-5.2.0.tgz#9fd95e3ac7c76f6ae8bcc868a0e3f11f1290c33e"
-  dependencies:
-    async-limiter "~1.0.0"
 
 xtend@^4.0.0:
   version "4.0.1"
