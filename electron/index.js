@@ -2,19 +2,71 @@ const Electron = require('electron');
 const LibPath = require('path');
 const LibCp = require('child_process');
 
-let main;
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+// GLOBAL
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+let WIN_MAIN;
+let DIADUST;
+
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+// FUNC
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 const createMainWin = function() {
-  main = new Electron.BrowserWindow({width: 800, height: 600});
-  main.loadFile(LibPath.join(__dirname, './index.html'));
-  main.on('closed', () => {
-    main = null;
+  WIN_MAIN = new Electron.BrowserWindow({width: 800, height: 600});
+  WIN_MAIN.loadFile(LibPath.join(__dirname, './index.html'));
+  WIN_MAIN.on('closed', () => {
+    WIN_MAIN = null;
   });
 };
 
+const startDiadustGolang = function(callback) {
+  console.log(__dirname);
+  console.log(LibPath.join(__dirname, '../golang/bin/diadust'));
+  DIADUST = LibCp.execFile(LibPath.join(__dirname, '../golang/bin/diadust'), (err, stdout, stderr) => {
+    if (err) {
+      console.error(err);
+      process.exit(1);
+    }
+  });
+  DIADUST.stdout.on('data', (data) => {
+    console.log(`diadust-go:out: ${data}`);
+  });
+  DIADUST.stderr.on('data', (data) => {
+    console.log(`diadust-go:err: ${data}`);
+  });
+  DIADUST.on('close', (code) => {
+    console.log(`diadust-go:exit: ${code}`);
+  });
+  callback();
+};
+
+const terminateDiadustGolang = function() {
+  DIADUST.kill('SIGINT');
+};
+
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+// LIFECYCLE
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 Electron.app.on('ready', () => {
+  Electron.crashReporter.start({
+    companyName: 'diadust',
+    productName: 'diadust',
+    submitURL: 'http://127.0.0.1',
+    uploadToServer: false,
+  });
   startDiadustGolang(() => {
     createMainWin();
   });
+});
+
+/**
+ * app.quit()
+ * Try to close all windows. The before-quit event will be emitted first. If all windows are successfully closed, the will-quit event will be emitted and by default the application will terminate.
+ *
+ * This method guarantees that all beforeunload and unload event handlers are correctly executed. It is possible that a window cancels the quitting by returning false in the beforeunload event handler.
+ */
+Electron.app.on('before-quit', () => {
+  terminateDiadustGolang();
 });
 
 Electron.app.on('window-all-closed', () => {
@@ -24,23 +76,18 @@ Electron.app.on('window-all-closed', () => {
 });
 
 Electron.app.on('activate', () => {
-  if (main === null) {
+  if (WIN_MAIN === null) {
     createMainWin();
   }
 });
 
-const startDiadustGolang = function(callback) {
-  const diadust = LibCp.spawn(LibPath.join(__dirname, '../golang/bin/diadust'));
-  diadust.stdout.on('data', (data) => {
-    if (data.indexOf('http server Running on') !== -1) {
-      callback();
-    }
-    console.log(`diadust-go:out: ${data}`);
-  });
-  diadust.stderr.on('data', (data) => {
-    console.log(`diadust-go:err: ${data}`);
-  });
-  diadust.on('close', (code) => {
-    console.log(`diadust-go:exit: ${code}`);
-  });
-};
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+// ERROR
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+process.on('uncaughtException', (error) => {
+  console.error(`Process on uncaughtException error = ${error.stack}`);
+});
+
+process.on('unhandledRejection', (error) => {
+  console.error(`Process on unhandledRejection error = ${error.stack}`);
+});

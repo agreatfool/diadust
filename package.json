@@ -8,6 +8,22 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "webpack": "webpack"
   },
+  "build": {
+    "files": [
+      "**/*",
+      "!bash",
+      "!electron/components",
+      "!electron/http",
+      "!electron/model",
+      "!golang/src${/*}",
+      "!golang/pkg${/*}",
+      "!node_modules${/*}",
+      "!LICENSE",
+      "!*.md",
+      "!*.json",
+      "!*.js"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/agreatfool/diadust.git"
