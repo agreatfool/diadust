@@ -14,6 +14,9 @@ let DIADUST;
 const createMainWin = function() {
   WIN_MAIN = new Electron.BrowserWindow({width: 800, height: 600});
   WIN_MAIN.loadFile(LibPath.join(__dirname, './index.html'));
+  WIN_MAIN.webContents.on('will-navigate', (event) => {
+    event.preventDefault(); // prevent global dragover & drop event
+  });
   WIN_MAIN.on('closed', () => {
     WIN_MAIN = null;
   });
