@@ -4,9 +4,10 @@
   "description": "",
   "main": "electron/index.js",
   "scripts": {
-    "start": "electron ./electron/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "webpack": "webpack"
+    "test": "cd golang && export GOPATH=${PWD} && cd src/diadust && dep ensure -v && go build && go install && cd ../../../ && electron ./electron/index.js",
+    "webpack": "webpack",
+    "start": "electron-builder --mac --dir && electron ./dist/mac/diadust.app/Contents/Resources/app.asar",
+    "pack": "electron-builder --mac --dir"
   },
   "build": {
     "files": [
