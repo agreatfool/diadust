@@ -4,9 +4,10 @@
   "description": "",
   "main": "electron/index.js",
   "scripts": {
-    "test": "cd golang && export GOPATH=${PWD} && cd src/diadust && dep ensure -v && go build && go install && cd ../../../ && electron ./electron/index.js",
-    "webpack": "webpack",
-    "start": "electron-builder --mac --dir && electron ./dist/mac/diadust.app/Contents/Resources/app.asar",
+    "client": "electron ./electron/index.html",
+    "buildgo": "cd golang && export GOPATH=${PWD} && cd src/diadust && dep ensure -v && go build && go install",
+    "webpack": "webpack --watch",
+    "runpack": "electron ./dist/mac/diadust.app/Contents/Resources/app.asar",
     "pack": "electron-builder --mac --dir"
   },
   "build": {
