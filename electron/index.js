@@ -20,10 +20,8 @@ const createMainWin = function() {
 };
 
 const startDiadustGolang = function(callback) {
-  console.log(__dirname);
-  console.log(LibPath.join(__dirname, '../golang/bin/diadust'));
   DIADUST = LibCp.execFile(LibPath.join(__dirname, '../golang/bin/diadust'), (err, stdout, stderr) => {
-    if (err) {
+    if (err && err.signal !== 'SIGINT') {
       console.error(err);
       process.exit(1);
     }
