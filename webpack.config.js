@@ -4,9 +4,9 @@ const webpack = require('webpack');
 module.exports = {
   entry: './electron/index.vue.ts',
   output: {
-    path: path.resolve(__dirname, './dist'),
+    path: path.resolve(__dirname, './electron/dist'),
     publicPath: '/dist/',
-    filename: 'build.js'
+    filename: 'bundle.js'
   },
   target: 'electron-main',
   module: {
