@@ -3,10 +3,9 @@ import Vuex, {Module, Mutation} from "vuex";
 
 import {Store as GalleryStore, State as GalleryState} from "../gallery/Store";
 import {Store as SettingStore, State as SettingState} from "../setting/Store";
+import {Store as ViewerStore, State as ViewerState} from "../viewer/Store";
 import {ImageSearchFilter} from "../../model/Query";
 import {DropItems} from "../../model/Drop";
-import {ElTabPane} from "element-ui/types/tab-pane";
-import {Image} from "../../model/Image";
 
 Vue.use(Vuex);
 
@@ -72,11 +71,13 @@ export interface AppState {
     Root: State;
     Gallery: GalleryState;
     Setting: SettingState;
+    Viewer: ViewerState;
 }
 export const store = new Vuex.Store({
     modules: {
         Root: Store,
         Gallery: GalleryStore,
         Setting: SettingStore,
+        Viewer: ViewerStore,
     }
 });

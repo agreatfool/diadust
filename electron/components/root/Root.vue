@@ -24,21 +24,15 @@
                             </el-button>
                         </el-button-group>
                         <el-button-group style="margin-left: 10px;">
-                            <router-link :to="{path: '/gallery'}">
-                                <el-button :autofocus="true">
-                                    <i class="el-icon-picture-outline"></i>
-                                </el-button>
-                            </router-link>
-                            <router-link :to="{path: '/viewer'}">
-                                <el-button>
-                                    <i class="el-icon-view"></i>
-                                </el-button>
-                            </router-link>
-                            <router-link :to="{path: '/setting'}">
-                                <el-button>
-                                    <i class="el-icon-setting"></i>
-                                </el-button>
-                            </router-link>
+                            <el-button :autofocus="true" @click="redirect('/gallery')">
+                                <i class="el-icon-picture-outline"></i>
+                            </el-button>
+                            <el-button @click="redirect('/viewer')">
+                                <i class="el-icon-view"></i>
+                            </el-button>
+                            <el-button @click="redirect('/setting')">
+                                <i class="el-icon-setting"></i>
+                            </el-button>
                         </el-button-group>
                         <el-button-group style="float: right;">
                             <el-button><i class="el-icon-plus"></i></el-button>
@@ -93,6 +87,10 @@
 
         historyForward() {
             alert('historyForward');
+        }
+
+        redirect(path: string) {
+            this.$router.push(path);
         }
 
         tabEdit(name: string, action: string) {
