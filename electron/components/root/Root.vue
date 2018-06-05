@@ -7,13 +7,16 @@
                     <el-row :gutter="10">
                         <el-col :span="2" class="btn_top"><el-button plain size="small" icon="el-icon-arrow-left"></el-button></el-col>
                         <el-col :span="2" class="btn_top"><el-button plain size="small" icon="el-icon-arrow-right"></el-button></el-col>
-                        <el-col :span="20">
-                            <el-tabs @tab-click="tabClick">
+                        <el-col :span="18">
+                            <el-tabs v-model="this.state.activeTab" @tab-click="tabClick">
                                 <el-tab-pane label="Gallery" name="gallery"></el-tab-pane>
                                 <el-tab-pane label="Setting" name="setting"></el-tab-pane>
-                                <el-tab-pane label="AAA" name="bbb" closable></el-tab-pane>
+                                <el-tab-pane v-for="tab in this.state.tabs" :label="tab.label" :name="tab.name" closable editable @edit="tabEdit">
+                                    <image-viewer></image-viewer>
+                                </el-tab-pane>
                             </el-tabs>
                         </el-col>
+                        <el-col :span="2" class="btn_top"><el-button plain size="small" icon="el-icon-circle-plus-outline"></el-button></el-col>
                     </el-row>
                 </div>
             </el-header>
@@ -27,11 +30,12 @@
 
 <style>
 .btn_top {
-    padding-top: 6px;
+    padding-top: 8px;
 }
 </style>
 
 <script lang="ts">
+    import * as uuidv4 from 'uuid/v4';
     import {Component, Vue} from "vue-property-decorator";
 
     import {ElTabPane} from "element-ui/types/tab-pane";
@@ -42,7 +46,7 @@
     import ArchiveViewer from '../archive/Archive.vue';
 
     import {router} from './Router';
-    import {store} from './Store';
+    import {AppState, NavTab, State as RootState, store} from './Store';
 
     @Component({
         router,
@@ -56,9 +60,23 @@
     })
     export default class Root extends Vue {
 
+        private state: RootState;
+
+        constructor() {
+            super();
+            this.state = (this.$store.state as AppState).Root;
+        }
+
         // FIXME closable tabs shall be added & removed by programming, see: http://element-cn.eleme.io/#/zh-CN/component/tabs
         tabClick(tab: ElTabPane) {
             this.$router.push(`/${tab.label}`);
+        }
+
+        tabEdit(name: string, action: string) {
+            if (action !== 'remove') {
+                return;
+            }
+            this.$store.commit('removeTab', name);
         }
 
         // FIXME 感觉不大对，数据和页面的流转还是要再考虑下
@@ -74,21 +92,28 @@
         drop(ev: DragEvent) {
             ev.preventDefault();
             alert('root dropped');
+
+            let files = [] as Array<File>;
             if (ev.dataTransfer.items) {
-                // Use DataTransferItemList interface to access the file(s)
                 for (let i = 0; i < ev.dataTransfer.items.length; i++) {
-                    // If dropped items aren't files, reject them
-                    if (ev.dataTransfer.items[i].kind === 'file') {
-                        let file = ev.dataTransfer.items[i].getAsFile();
-                        console.log(file);
+                    if (ev.dataTransfer.items[i].kind !== 'file') {
+                        continue;
+                    }
+                    let file = ev.dataTransfer.items[i].getAsFile();
+                    if (file) {
+                        files.push(file);
                     }
                 }
-            } else {
-                // Use DataTransfer interface to access the file(s)
-                for (let i = 0; i < ev.dataTransfer.files.length; i++) {
-                    console.log(ev.dataTransfer.files[i]);
-                }
             }
+
+            if (files.length <= 0) {
+                return;
+            }
+
+            this.$store.commit('addTab', {
+                label: files.length === 1 ? files[0].name : `${files[0].name}...`,
+                name: uuidv4(),
+            } as NavTab);
         }
 
     }

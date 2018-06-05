@@ -39,6 +39,7 @@
   "devDependencies": {
     "@types/node": "8.10.17",
     "@types/node-fetch": "2.1.1",
+    "@types/uuid": "3.4.3",
     "autoprefixer": "6.6.0",
     "css-loader": "0.28.11",
     "electron": "2.0.2",
@@ -56,6 +57,7 @@
   "dependencies": {
     "element-ui": "2.4.0",
     "node-fetch": "2.1.2",
+    "uuid": "3.2.1",
     "vue": "2.5.16",
     "vue-class-component": "6.2.0",
     "vue-i18n": "7.7.0",

@@ -15,15 +15,16 @@
 <script lang="ts">
     import {Component, Vue} from "vue-property-decorator";
 
-    import {State} from './Store';
+    import {State as GalleryState} from './Store';
+    import {AppState} from "../root/Store";
 
     @Component
     export default class Gallery extends Vue {
-        private state: State;
+        private state: GalleryState;
 
         constructor() {
             super();
-            this.state = (this.$store.state as any).Gallery;
+            this.state = (this.$store.state as AppState).Gallery;
         }
 
         mounted() {
