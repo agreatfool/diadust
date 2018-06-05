@@ -4,11 +4,17 @@
             <el-header>
                 <div v-on:dragover.prevent
                      v-on:drop="drop">
-                    <el-tabs @tab-click="tabClick">
-                        <el-tab-pane label="Gallery" name="gallery"></el-tab-pane>
-                        <el-tab-pane label="Setting" name="setting"></el-tab-pane>
-                        <el-tab-pane label="AAA" name="bbb" closable></el-tab-pane>
-                    </el-tabs>
+                    <el-row :gutter="10">
+                        <el-col :span="1"><el-button type="text" icon="el-icon-arrow-left"></el-button></el-col>
+                        <el-col :span="1"><el-button type="text" icon="el-icon-arrow-right"></el-button></el-col>
+                        <el-col :span="22">
+                            <el-tabs @tab-click="tabClick">
+                                <el-tab-pane label="Gallery" name="gallery"></el-tab-pane>
+                                <el-tab-pane label="Setting" name="setting"></el-tab-pane>
+                                <el-tab-pane label="AAA" name="bbb" closable></el-tab-pane>
+                            </el-tabs>
+                        </el-col>
+                    </el-row>
                 </div>
             </el-header>
             <el-main>
