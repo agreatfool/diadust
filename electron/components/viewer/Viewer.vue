@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h2>This is ArchiveViewer</h2>
+        <h2>This is ImageViewer</h2>
     </div>
 </template>
 
@@ -12,7 +12,7 @@
 import { Vue, Component, Prop } from "vue-property-decorator";
 
 @Component
-export default class ArchiveViewer extends Vue {
+export default class Viewer extends Vue {
 
 }
 </script>

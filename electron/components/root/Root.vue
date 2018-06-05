@@ -4,19 +4,46 @@
             <el-header>
                 <div v-on:dragover.prevent
                      v-on:drop="drop">
-                    <el-row :gutter="10">
-                        <el-col :span="2" class="btn_top"><el-button plain size="small" icon="el-icon-arrow-left"></el-button></el-col>
-                        <el-col :span="2" class="btn_top"><el-button plain size="small" icon="el-icon-arrow-right"></el-button></el-col>
-                        <el-col :span="18">
-                            <el-tabs v-model="this.state.activeTab" @tab-click="tabClick">
-                                <el-tab-pane label="Gallery" name="gallery"></el-tab-pane>
-                                <el-tab-pane label="Setting" name="setting"></el-tab-pane>
-                                <el-tab-pane v-for="tab in this.state.tabs" :label="tab.label" :name="tab.name" closable editable @edit="tabEdit">
-                                    <image-viewer></image-viewer>
-                                </el-tab-pane>
-                            </el-tabs>
-                        </el-col>
-                        <el-col :span="2" class="btn_top"><el-button plain size="small" icon="el-icon-circle-plus-outline"></el-button></el-col>
+                    <el-row>
+                        <!--<el-col :span="2" class="btn_top"><el-button plain size="small" icon="el-icon-arrow-left"></el-button></el-col>-->
+                        <!--<el-col :span="2" class="btn_top"><el-button plain size="small" icon="el-icon-arrow-right"></el-button></el-col>-->
+                        <!--<el-col :span="18">-->
+                        <!--<el-tabs v-model="this.state.activeTab" @tab-click="tabClick">-->
+                        <!--<el-tab-pane label="Gallery" name="gallery"></el-tab-pane>-->
+                        <!--<el-tab-pane label="Setting" name="setting"></el-tab-pane>-->
+                        <!--<el-tab-pane v-for="tab in this.state.tabs" :label="tab.label" :name="tab.name" closable editable @edit="tabEdit">-->
+                        <!--<image-viewer></image-viewer>-->
+                        <!--</el-tab-pane>-->
+                        <!--</el-tabs>-->
+                        <!--</el-col>-->
+                        <!--<el-col :span="2" class="btn_top"><el-button plain size="small" icon="el-icon-circle-plus-outline"></el-button></el-col>-->
+                        <!--<el-col :span="14" type="flex" justify="start">-->
+                        <el-button-group>
+                            <el-button @click="historyBack"><i class="el-icon-arrow-left"></i></el-button>
+                            <el-button @click="historyForward"><i class="el-icon-arrow-right el-icon--right"></i>
+                            </el-button>
+                        </el-button-group>
+                        <el-button-group style="margin-left: 10px;">
+                            <router-link :to="{path: '/gallery'}">
+                                <el-button :autofocus="true">
+                                    <i class="el-icon-picture-outline"></i>
+                                </el-button>
+                            </router-link>
+                            <router-link :to="{path: '/viewer'}">
+                                <el-button>
+                                    <i class="el-icon-view"></i>
+                                </el-button>
+                            </router-link>
+                            <router-link :to="{path: '/setting'}">
+                                <el-button>
+                                    <i class="el-icon-setting"></i>
+                                </el-button>
+                            </router-link>
+                        </el-button-group>
+                        <el-button-group style="float: right;">
+                            <el-button><i class="el-icon-plus"></i></el-button>
+                            <el-button><i class="el-icon-menu"></i></el-button>
+                        </el-button-group>
                     </el-row>
                 </div>
             </el-header>
@@ -29,21 +56,15 @@
 </template>
 
 <style>
-.btn_top {
-    padding-top: 8px;
-}
 </style>
 
 <script lang="ts">
     import * as uuidv4 from 'uuid/v4';
     import {Component, Vue} from "vue-property-decorator";
 
-    import {ElTabPane} from "element-ui/types/tab-pane";
-
     import Gallery from '../gallery/Gallery.vue';
     import Setting from '../setting/Setting.vue';
-    import ImageViewer from '../image/Image.vue';
-    import ArchiveViewer from '../archive/Archive.vue';
+    import Viewer from '../viewer/Viewer.vue';
 
     import {router} from './Router';
     import {AppState, NavTab, State as RootState, store} from './Store';
@@ -54,8 +75,7 @@
         components: {
             Gallery,
             Setting,
-            ImageViewer,
-            ArchiveViewer,
+            Viewer,
         }
     })
     export default class Root extends Vue {
@@ -67,9 +87,12 @@
             this.state = (this.$store.state as AppState).Root;
         }
 
-        // FIXME closable tabs shall be added & removed by programming, see: http://element-cn.eleme.io/#/zh-CN/component/tabs
-        tabClick(tab: ElTabPane) {
-            this.$router.push(`/${tab.label}`);
+        historyBack() {
+            alert('historyBack');
+        }
+
+        historyForward() {
+            alert('historyForward');
         }
 
         tabEdit(name: string, action: string) {
@@ -106,7 +129,7 @@
                 }
             }
 
-            if (files.length <= 0) {
+            if (files.length === 0) {
                 return;
             }
 
