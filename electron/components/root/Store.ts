@@ -17,47 +17,24 @@ interface ActionHistory {
     data: ImageSearchFilter | SettingState | DropItems;
 }
 
-export interface NavTab {
-    label: string;
-    name: string;
-}
-
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 // Root store mutations & actions
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
-const addTab: Mutation<State> = function (state: State, payload: NavTab) {
-    state.tabs.push(payload);
-};
 
-const removeTab: Mutation<State> = function (state: State, payload: string) {
-    state.tabs.forEach((tab, index) => {
-        if (tab.name === payload) {
-            let nextTab = state.tabs[index + 1] || state.tabs[index - 1];
-            if (nextTab) {
-                state.activeTab = nextTab.name;
-            }
-        }
-    });
-};
 
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 // Root store
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 export interface State {
-    activeTab: string;
     histories: Array<ActionHistory>;
-    tabs: Array<NavTab>;
 }
 
 export const Store: Module<State, {}> = {
     state: {
-        activeTab: 'gallery',
         histories: [],
-        tabs: [],
     },
     mutations: {
-        addTab,
-        removeTab,
+
     },
     actions: {
 

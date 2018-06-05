@@ -1,10 +1,14 @@
+import {Module} from "vuex";
+
+// State
 export interface State {
 
 }
 
 export interface Options extends State {} // alias
 
-export const Store = {
+// Store
+export const Store: Module<State, {}>  = {
     state: {
 
     } as Options,
