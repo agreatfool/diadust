@@ -5,9 +5,9 @@
                 <div v-on:dragover.prevent
                      v-on:drop="drop">
                     <el-row :gutter="10">
-                        <el-col :span="1"><el-button type="text" icon="el-icon-arrow-left"></el-button></el-col>
-                        <el-col :span="1"><el-button type="text" icon="el-icon-arrow-right"></el-button></el-col>
-                        <el-col :span="22">
+                        <el-col :span="2" class="btn_top"><el-button plain size="small" icon="el-icon-arrow-left"></el-button></el-col>
+                        <el-col :span="2" class="btn_top"><el-button plain size="small" icon="el-icon-arrow-right"></el-button></el-col>
+                        <el-col :span="20">
                             <el-tabs @tab-click="tabClick">
                                 <el-tab-pane label="Gallery" name="gallery"></el-tab-pane>
                                 <el-tab-pane label="Setting" name="setting"></el-tab-pane>
@@ -26,6 +26,9 @@
 </template>
 
 <style>
+.btn_top {
+    padding-top: 6px;
+}
 </style>
 
 <script lang="ts">
