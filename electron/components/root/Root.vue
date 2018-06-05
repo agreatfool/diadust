@@ -30,6 +30,8 @@
 
     import Gallery from '../gallery/Gallery.vue';
     import Setting from '../setting/Setting.vue';
+    import ImageViewer from '../image/Image.vue';
+    import ArchiveViewer from '../archive/Archive.vue';
 
     import {router} from './Router';
     import {store} from './Store';
@@ -39,7 +41,9 @@
         store,
         components: {
             Gallery,
-            Setting
+            Setting,
+            ImageViewer,
+            ArchiveViewer,
         }
     })
     export default class Root extends Vue {

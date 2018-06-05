@@ -1,5 +1,5 @@
 import Vue from "vue";
-import Vuex from "vuex";
+import Vuex, {Module} from "vuex";
 
 import {Store as GalleryStore} from "../gallery/Store";
 import {Store as SettingStore} from "../setting/Store";
@@ -12,3 +12,24 @@ export const store = new Vuex.Store({
         Setting: SettingStore,
     }
 });
+
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+// Root self store
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+// State
+export interface State {
+
+}
+
+// Store
+export const Store: Module<State, {}> = {
+    state: {
+
+    },
+    mutations: {
+
+    },
+    actions: {
+
+    }
+};

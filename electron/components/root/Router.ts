@@ -9,6 +9,5 @@ Vue.use(VueRouter);
 const routes = [
     {path: '/gallery', component: Gallery},
     {path: '/setting', component: Setting},
-    {path: '*', redirect: '/gallery'},
 ];
 export const router = new VueRouter({routes});

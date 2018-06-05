@@ -1,5 +1,6 @@
 <template>
-    <div>
+    <div v-on:dragover.prevent
+         v-on:drop="drop">
         <h2>This is gallery</h2>
         <div v-for="image in this.state.images">
             {{JSON.stringify(image)}}
@@ -27,6 +28,12 @@
 
         mounted() {
             this.$store.dispatch('fetchImages').then(_ => _);
+        }
+
+        drop(event: DragEvent) {
+            event.preventDefault();
+            alert('Gallery dropped');
+            // 在这里触发往gallery添加图片的事件
         }
     }
 </script>
