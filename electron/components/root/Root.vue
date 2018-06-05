@@ -25,7 +25,7 @@
                             </el-button>
                         </el-button-group>
                         <el-button-group style="float: right;">
-                            <el-button><i class="el-icon-plus"></i></el-button>
+                            <el-button v-if="shallDisplayPlusButton()"><i class="el-icon-plus"></i></el-button>
                             <el-button><i class="el-icon-menu"></i></el-button>
                         </el-button-group>
                     </el-row>
@@ -70,6 +70,10 @@
 
         historyForward() {
             alert('historyForward');
+        }
+
+        shallDisplayPlusButton() {
+            return this.$route.path !== '/setting';
         }
 
         shallButtonFocus(path: string) {
