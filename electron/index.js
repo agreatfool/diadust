@@ -55,9 +55,9 @@ Electron.app.on('ready', () => {
     submitURL: 'http://127.0.0.1',
     uploadToServer: false,
   });
-  startDiadustGolang(() => {
+  // startDiadustGolang(() => {
     createMainWin();
-  });
+  // });
 });
 
 /**
@@ -67,7 +67,7 @@ Electron.app.on('ready', () => {
  * This method guarantees that all beforeunload and unload event handlers are correctly executed. It is possible that a window cancels the quitting by returning false in the beforeunload event handler.
  */
 Electron.app.on('before-quit', () => {
-  terminateDiadustGolang();
+  // terminateDiadustGolang();
 });
 
 Electron.app.on('window-all-closed', () => {
