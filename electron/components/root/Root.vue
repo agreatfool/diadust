@@ -26,7 +26,6 @@
 </template>
 
 <style>
-
 </style>
 
 <script lang="ts">
@@ -69,9 +68,24 @@
         // 一个是tab，根据drop打开的东西来新生成component
         // 二是drop事件，根据这个drop事件将不同的内容存储到store里，那么打开的组件就可以应对这些drop内容
 
-        drop(event: DragEvent) {
-            event.preventDefault();
+        drop(ev: DragEvent) {
+            ev.preventDefault();
             alert('root dropped');
+            if (ev.dataTransfer.items) {
+                // Use DataTransferItemList interface to access the file(s)
+                for (let i = 0; i < ev.dataTransfer.items.length; i++) {
+                    // If dropped items aren't files, reject them
+                    if (ev.dataTransfer.items[i].kind === 'file') {
+                        let file = ev.dataTransfer.items[i].getAsFile();
+                        console.log(file);
+                    }
+                }
+            } else {
+                // Use DataTransfer interface to access the file(s)
+                for (let i = 0; i < ev.dataTransfer.files.length; i++) {
+                    console.log(ev.dataTransfer.files[i]);
+                }
+            }
         }
 
     }
