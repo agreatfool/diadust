@@ -9,10 +9,10 @@
 </style>
 
 <script lang="ts">
-import { Vue, Component, Prop } from "vue-property-decorator";
+    import {Component, Vue} from "vue-property-decorator";
 
-@Component
-export default class Setting extends Vue {
+    @Component
+    export default class Setting extends Vue {
 
-}
+    }
 </script>

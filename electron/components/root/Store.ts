@@ -1,9 +1,9 @@
 import Vue from "vue";
-import Vuex, {Module, Mutation} from "vuex";
+import Vuex, {Module} from "vuex";
 
-import {Store as GalleryStore, State as GalleryState} from "../gallery/Store";
-import {Store as SettingStore, State as SettingState} from "../setting/Store";
-import {Store as ViewerStore, State as ViewerState} from "../viewer/Store";
+import {State as GalleryState, Store as GalleryStore} from "../gallery/Store";
+import {State as SettingState, Store as SettingStore} from "../setting/Store";
+import {State as ViewerState, Store as ViewerStore} from "../viewer/Store";
 import {ImageSearchFilter} from "../../model/Query";
 import {DropItems} from "../../model/Drop";
 
@@ -33,12 +33,8 @@ export const Store: Module<State, {}> = {
     state: {
         histories: [],
     },
-    mutations: {
-
-    },
-    actions: {
-
-    }
+    mutations: {},
+    actions: {}
 };
 
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
@@ -50,6 +46,7 @@ export interface AppState {
     Setting: SettingState;
     Viewer: ViewerState;
 }
+
 export const store = new Vuex.Store({
     modules: {
         Root: Store,

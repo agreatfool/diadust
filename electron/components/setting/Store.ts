@@ -5,17 +5,12 @@ export interface State {
 
 }
 
-export interface Options extends State {} // alias
+export interface Options extends State {
+} // alias
 
 // Store
-export const Store: Module<State, {}>  = {
-    state: {
-
-    } as Options,
-    mutations: {
-
-    },
-    actions: {
-
-    }
+export const Store: Module<State, {}> = {
+    state: {} as Options,
+    mutations: {},
+    actions: {}
 };

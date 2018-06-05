@@ -1,19 +1,19 @@
 import {Module, Mutation} from "vuex";
 
-export interface NavTab {
+export interface ViewerNavTab {
     label: string;
     name: string;
 }
 
 // Mutations
-const viewerTabAdd: Mutation<State> = function (state: State, payload: NavTab) {
+const viewerTabAdd: Mutation<State> = function (state: State, payload: ViewerNavTab) {
     state.tabs.push(payload);
     state.activeTab = payload.name;
 };
 
 const viewerTabRemove: Mutation<State> = function (state: State, payload: string) {
     let foundIndex = -1;
-    state.tabs.forEach((tab: NavTab, index: number) => {
+    state.tabs.forEach((tab: ViewerNavTab, index: number) => {
         if (tab.name === payload) {
             foundIndex = index;
         }
@@ -22,18 +22,18 @@ const viewerTabRemove: Mutation<State> = function (state: State, payload: string
     if (foundIndex !== -1) {
         let nextTab = state.tabs[foundIndex + 1] || state.tabs[foundIndex - 1];
         state.tabs.splice(foundIndex, 1);
-        state.activeTab = nextTab.name ? nextTab.name : '';
+        state.activeTab = nextTab ? nextTab.name : '';
     }
 };
 
 // State
 export interface State {
     activeTab: string;
-    tabs: Array<NavTab>;
+    tabs: Array<ViewerNavTab>;
 }
 
 // Store
-export const Store: Module<State, {}>  = {
+export const Store: Module<State, {}> = {
     state: {
         activeTab: '',
         tabs: [],
@@ -42,7 +42,5 @@ export const Store: Module<State, {}>  = {
         viewerTabAdd,
         viewerTabRemove,
     },
-    actions: {
-
-    }
+    actions: {}
 };

@@ -6,8 +6,11 @@
                      v-on:drop="drop">
                     <el-row>
                         <el-button-group>
-                            <el-button @click="historyBack"><i class="el-icon-arrow-left"></i></el-button>
-                            <el-button @click="historyForward"><i class="el-icon-arrow-right el-icon--right"></i>
+                            <el-button @click="historyBack">
+                                <i class="el-icon-arrow-left"></i>
+                            </el-button>
+                            <el-button @click="historyForward">
+                                <i class="el-icon-arrow-right el-icon--right"></i>
                             </el-button>
                         </el-button-group>
                         <el-button-group style="margin-left: 10px;">
@@ -40,7 +43,7 @@
 </style>
 
 <script lang="ts">
-    import * as uuidv4 from 'uuid/v4';
+    import * as uuidV4 from 'uuid/v4';
     import {Component, Vue} from "vue-property-decorator";
 
     import Gallery from '../gallery/Gallery.vue';
@@ -48,8 +51,8 @@
     import Viewer from '../viewer/Viewer.vue';
 
     import {router} from './Router';
-    import {AppState, State as RootState, store} from './Store';
-    import {NavTab} from "../viewer/Store";
+    import {store} from './Store';
+    import {ViewerNavTab} from "../viewer/Store";
 
     @Component({
         router,
@@ -61,14 +64,6 @@
         }
     })
     export default class Root extends Vue {
-
-        private state: RootState;
-
-        constructor() {
-            super();
-            this.state = (this.$store.state as AppState).Root;
-        }
-
         historyBack() {
             alert('historyBack');
         }
@@ -85,17 +80,16 @@
             this.$router.push(path);
         }
 
-        drop(ev: DragEvent) {
-            ev.preventDefault();
-            alert('root dropped');
+        drop(event: DragEvent) {
+            event.preventDefault();
 
             let files = [] as Array<File>;
-            if (ev.dataTransfer.items) {
-                for (let i = 0; i < ev.dataTransfer.items.length; i++) {
-                    if (ev.dataTransfer.items[i].kind !== 'file') {
+            if (event.dataTransfer.items) {
+                for (let i = 0; i < event.dataTransfer.items.length; i++) {
+                    if (event.dataTransfer.items[i].kind !== 'file') {
                         continue;
                     }
-                    let file = ev.dataTransfer.items[i].getAsFile();
+                    let file = event.dataTransfer.items[i].getAsFile();
                     if (file) {
                         files.push(file);
                     }
@@ -108,9 +102,8 @@
 
             this.$store.commit('viewerTabAdd', {
                 label: files.length === 1 ? files[0].name : `${files[0].name}...`,
-                name: uuidv4(),
-            } as NavTab);
+                name: uuidV4(),
+            } as ViewerNavTab);
         }
-
     }
 </script>
