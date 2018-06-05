@@ -5,7 +5,9 @@
                      v-model="$store.state.Viewer.activeTab"
                      closable @tab-remove="tabRemove"
                      style="height: 320px;">
-                <el-tab-pane v-for="tab in $store.state.Viewer.tabs" :label="tab.label" :name="tab.name"></el-tab-pane>
+                <el-tab-pane v-for="tab in $store.state.Viewer.tabs" :label="tab.label" :name="tab.name">
+                    <instance></instance>
+                </el-tab-pane>
             </el-tabs>
         </template>
     </div>
@@ -18,7 +20,13 @@
 <script lang="ts">
     import {Component, Vue} from "vue-property-decorator";
 
-    @Component
+    import Instance from './Instance.vue';
+
+    @Component({
+        components: {
+            Instance,
+        }
+    })
     export default class Viewer extends Vue {
         tabRemove(name: string) {
             this.$store.commit('viewerTabRemove', name);
