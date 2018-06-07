@@ -57,6 +57,8 @@
     import {store} from './Store';
     import {ViewerNavTab} from "../viewer/Store";
 
+    import 'jquery';
+
     @Component({
         router,
         store,
