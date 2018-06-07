@@ -55,12 +55,6 @@ module.exports = {
       }
     ]
   },
-  plugins: [
-    new webpack.ProvidePlugin({
-      $: "jquery",
-      jQuery: "jquery"
-    })
-  ],
   resolve: {
     extensions: ['.ts', '.js', '.vue', '.json'],
     alias: {
