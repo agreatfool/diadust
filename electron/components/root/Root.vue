@@ -31,7 +31,7 @@
                     </el-row>
                 </div>
             </el-header>
-            <el-main>
+            <el-main :style="{height: dynamicMainHeight + 'px'}">
                 <router-view></router-view>
             </el-main>
             <el-footer></el-footer>
@@ -40,11 +40,14 @@
 </template>
 
 <style>
+    .el-main {
+        padding: 0 20px
+    }
 </style>
 
 <script lang="ts">
     import * as uuidV4 from 'uuid/v4';
-    import {Component, Vue} from "vue-property-decorator";
+    import {Component, Model, Vue} from "vue-property-decorator";
 
     import Gallery from '../gallery/Gallery.vue';
     import Setting from '../setting/Setting.vue';
@@ -58,12 +61,14 @@
         router,
         store,
         components: {
-            Gallery,
-            Setting,
-            Viewer,
+            gallery: Gallery,
+            setting: Setting,
+            viewer: Viewer,
         }
     })
     export default class Root extends Vue {
+        @Model() dynamicMainHeight: number = 0;
+
         historyBack() {
             alert('historyBack');
         }
@@ -108,6 +113,22 @@
                 label: files.length === 1 ? files[0].name : `${files[0].name}...`,
                 name: uuidV4(),
             } as ViewerNavTab);
+        }
+
+        setDynamicMainHeight() {
+            this.dynamicMainHeight = document.documentElement.clientHeight - 60 - 60 - 10; // - header - footer - some_space
+        }
+
+        mounted() {
+            this.$nextTick(() => {
+                window.addEventListener('resize', this.setDynamicMainHeight);
+
+                this.setDynamicMainHeight(); // init
+            })
+        }
+
+        beforeDestroy() {
+            window.removeEventListener('resize', this.setDynamicMainHeight);
         }
     }
 </script>
