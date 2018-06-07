@@ -32,7 +32,7 @@
                 </div>
             </el-header>
             <el-main :style="{height: dynamicMainHeight + 'px'}">
-                <router-view></router-view>
+                <router-view class="app-main-router"></router-view>
             </el-main>
             <el-footer></el-footer>
         </el-container>
@@ -41,7 +41,10 @@
 
 <style>
     .el-main {
-        padding: 0 20px
+        padding: 0 20px;
+    }
+    .app-main-router {
+        height: 100%;
     }
 </style>
 
@@ -56,8 +59,6 @@
     import {router} from './Router';
     import {store} from './Store';
     import {ViewerNavTab} from "../viewer/Store";
-
-    import 'jquery';
 
     @Component({
         router,
@@ -118,7 +119,7 @@
         }
 
         setDynamicMainHeight() {
-            this.dynamicMainHeight = document.documentElement.clientHeight - 60 - 60 - 10; // - header - footer - some_space
+            this.dynamicMainHeight = document.documentElement.clientHeight - 60 - 60 - 15; // - header - footer - some_space
         }
 
         mounted() {
