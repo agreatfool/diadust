@@ -4,6 +4,7 @@
   "description": "",
   "main": "electron/index.js",
   "scripts": {
+    "start": "electron ./electron/index.js",
     "client": "electron ./electron/index.html",
     "buildgo": "cd golang && export GOPATH=${PWD} && cd src/diadust && dep ensure -v && go build && go install",
     "webpack": "webpack --watch",

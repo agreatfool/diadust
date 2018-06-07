@@ -20,10 +20,13 @@
 * https://github.com/shershen08/vue-masonry
 * https://masonry.desandro.com/ https://codepen.io/desandro/pen/kwsJb https://codepen.io/desandro/pen/bqvLaZ/
 * http://mirari.cc/v-viewer/
+* https://github.com/pfirpfel/image-viewer/blob/master/viewer.js 基于canvas的图片预览和拖动
+* https://github.com/lovell/sharp 图片裁减，缩放，转化库
 
 ## Electron
 
 * https://github.com/electron-userland/electron-packager
+* https://discuss.atom.io/t/cross-platform-open-with-myapp-context-menu-entry-in-electron-apps/37407/4 系统右键菜单注册
 
 ## GOPATH
 
