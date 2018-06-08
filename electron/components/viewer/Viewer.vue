@@ -25,7 +25,7 @@
 </style>
 
 <script lang="ts">
-    import {Component, Vue} from "vue-property-decorator";
+    import {Component, Prop, Vue} from "vue-property-decorator";
 
     import Instance from './Instance.vue';
 
@@ -35,6 +35,15 @@
         }
     })
     export default class Viewer extends Vue {
+        @Prop({
+            default: ''
+        }) galleryId: string;
+
+        constructor() {
+            super();
+            this.galleryId = '';
+        }
+
         truncateLabelStr(str: string) {
             return (str.length > 10) ? str.substr(0, 10 - 1) + '...' : str;
         }

@@ -52,13 +52,16 @@
     import * as uuidV4 from 'uuid/v4';
     import {Component, Model, Vue} from "vue-property-decorator";
 
+    import {router} from './Router';
+    import {store} from './Store';
+
     import Gallery from '../gallery/Gallery.vue';
     import Setting from '../setting/Setting.vue';
     import Viewer from '../viewer/Viewer.vue';
 
-    import {router} from './Router';
-    import {store} from './Store';
-    import {ViewerNavTab} from "../viewer/Store";
+    // import {LocalImage} from '../../model/Image';
+    import {ViewerNavTab} from '../viewer/Store';
+    import {DropFiles, handleDropEvent} from '../../lib/Drop';
 
     @Component({
         router,
@@ -95,27 +98,38 @@
         drop(event: DragEvent) {
             event.preventDefault();
 
-            let files = [] as Array<File>;
-            if (event.dataTransfer.items) {
-                for (let i = 0; i < event.dataTransfer.items.length; i++) {
-                    if (event.dataTransfer.items[i].kind !== 'file') {
-                        continue;
-                    }
-                    let file = event.dataTransfer.items[i].getAsFile();
-                    if (file) {
-                        files.push(file);
-                    }
-                }
-            }
+            const dirs: DropFiles = handleDropEvent(event);
+            console.log(dirs);
 
-            if (files.length === 0) {
-                return;
-            }
-
-            this.$store.commit('viewerTabAdd', {
-                label: files.length === 1 ? files[0].name : `${files[0].name}...`,
-                name: uuidV4(),
-            } as ViewerNavTab);
+            // let dirs = {} as {[key: string]: Array<LocalImage>};
+            // let files = [] as Array<File>;
+            //
+            // if (event.dataTransfer.items) {
+            //     for (let i = 0; i < event.dataTransfer.items.length; i++) {
+            //         const item = event.dataTransfer.items[i] as DataTransferItem;
+            //         if (item.kind !== 'file') {
+            //             continue;
+            //         }
+            //
+            //         let file: File = item.getAsFile();
+            //         if (checkDropFileIsDir(file)) {
+            //             readDirFiles
+            //         }
+            //
+            //         if (file) {
+            //             files.push(file);
+            //         }
+            //     }
+            // }
+            //
+            // if (files.length === 0) {
+            //     return;
+            // }
+            //
+            // this.$store.commit('viewerTabAdd', {
+            //     label: files.length === 1 ? files[0].name : `${files[0].name}...`,
+            //     name: uuidV4(),
+            // } as ViewerNavTab);
         }
 
         setDynamicMainHeight() {

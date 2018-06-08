@@ -91,7 +91,7 @@
         }
 
         mounted() {
-            this.$store.dispatch('fetchImages').then(_ => _);
+            // this.$store.dispatch('fetchImages').then(_ => _);
 
             // this.msnry = new Masonry('.grid', {
             //     // options
