@@ -43,13 +43,13 @@
     .el-main {
         padding: 0 20px;
     }
+
     .app-main-router {
         height: 100%;
     }
 </style>
 
 <script lang="ts">
-    import * as uuidV4 from 'uuid/v4';
     import {Component, Model, Vue} from "vue-property-decorator";
 
     import {router} from './Router';
@@ -59,9 +59,7 @@
     import Setting from '../setting/Setting.vue';
     import Viewer from '../viewer/Viewer.vue';
 
-    // import {LocalImage} from '../../model/Image';
-    // import {ViewerNavTab} from '../viewer/Store';
-    import {DropFiles, handleDropEvent, dropFilesToGalleryType} from '../../lib/Drop';
+    import {DropFiles, dropFilesToGalleryType, handleDropEvent} from '../../lib/Drop';
 
     @Component({
         router,

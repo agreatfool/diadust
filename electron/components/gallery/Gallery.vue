@@ -48,7 +48,6 @@
     import fetch from 'node-fetch';
 
     import MugenScroll from 'vue-mugen-scroll';
-    // import * as Masonry from 'masonry-layout';
 
     Vue.use(VueMasonryPlugin);
 
@@ -68,8 +67,6 @@
         private users: Array<any> = [];
         private count: number = 0;
 
-        // private msnry: Masonry;
-
         //FIXME @1 如何处理：当第一次加载数据过少，滚动条不生成的情况下，后续如何触发获取数据事件
         //FIXME @2 如何调整单元格的默认宽度？现在应该是格子内容撑多大，则格子就多大
 
@@ -83,7 +80,6 @@
             fetch(`https://api.github.com/users?since=${(this.users.length > 0 && this.users[this.users.length - 1].id) || null}`).then(_ => _.json()).then(result => {
                 console.log('fetch done');
                 this.users = [...this.users, ...result];
-                // this.msnry.layout();
                 this.count++;
                 this.isLoading = false;
             });
@@ -92,12 +88,6 @@
 
         mounted() {
             // this.$store.dispatch('fetchImages').then(_ => _);
-
-            // this.msnry = new Masonry('.grid', {
-            //     // options
-            //     columnWidth: 200,
-            //     itemSelector: '.grid-item'
-            // });
         }
 
         drop(event: DragEvent) {

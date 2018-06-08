@@ -3,8 +3,6 @@ import Vuex, {Module} from "vuex";
 
 import {State as GalleryState, Store as GalleryStore} from "../gallery/Store";
 import {State as SettingState, Store as SettingStore} from "../setting/Store";
-import {State as ViewerState, Store as ViewerStore} from "../viewer/Store";
-import {ImageSearchFilter} from "../../model/Image";
 // import {DropItems} from "../../model/Drop";
 
 Vue.use(Vuex);
@@ -44,7 +42,6 @@ export interface AppState {
     Root: State;
     Gallery: GalleryState;
     Setting: SettingState;
-    Viewer: ViewerState;
 }
 
 export const store = new Vuex.Store({
@@ -52,6 +49,5 @@ export const store = new Vuex.Store({
         Root: Store,
         Gallery: GalleryStore,
         Setting: SettingStore,
-        Viewer: ViewerStore,
     }
 });
