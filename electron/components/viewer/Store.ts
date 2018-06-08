@@ -1,4 +1,5 @@
 import {Module, Mutation} from "vuex";
+import {Gallery} from "../gallery/Store";
 
 // export interface ViewerNavTab {
 //     label: string;
@@ -6,6 +7,25 @@ import {Module, Mutation} from "vuex";
 // }
 
 // Mutations
+// const viewerGalleryAdd: Mutation<State> = function (state: State, gallery: Gallery) {
+//     state.viewers.push(gallery);
+//     state.activeViewerTab = gallery.id;
+// };
+//
+// const viewerGalleryRemove: Mutation<State> = function (state: State, galleryId: string) {
+//     let foundIndex = -1;
+//     state.viewers.forEach((gallery: Gallery, index: number) => {
+//         if (gallery.id === galleryId) {
+//             foundIndex = index;
+//         }
+//     });
+//
+//     if (foundIndex !== -1) {
+//         let nextGallery = state.viewers[foundIndex + 1] || state.viewers[foundIndex - 1];
+//         state.viewers.splice(foundIndex, 1);
+//         state.activeViewerTab = nextGallery ? nextGallery.id : '';
+//     }
+// };
 // const viewerActivateTab: Mutation<State> = function (state: State, galleryId: string) {
 //     state.activeTab = galleryId; // Gallery.id
 // };
@@ -32,7 +52,8 @@ import {Module, Mutation} from "vuex";
 
 // State
 export interface State {
-    // activeTab: string;
+    // viewers: Array<Gallery>; // Viewer page, tabs
+    // activeViewerTab: string; // Viewer page, activated tab id (gallery id)
 }
 
 // Store
@@ -40,11 +61,15 @@ export const Store: Module<State, {}> = {
     state: {
         // activeTab: '',
         // tabs: [],
+        // viewers: [],
+        // activeViewerTab: '',
     } as State,
     mutations: {
         // viewerActivateTab,
         // viewerTabAdd,
         // viewerTabRemove,
+        // viewerGalleryAdd,
+        // viewerGalleryRemove,
     },
     actions: {}
 };

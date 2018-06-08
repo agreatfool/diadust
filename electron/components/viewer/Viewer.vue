@@ -5,10 +5,10 @@
                      v-model="$store.state.Gallery.activeViewerTab"
                      closable @tab-remove="tabRemove"
                      class="nav_tab">
-                <template v-for="tab in $store.state.Gallery.viewers">
-                    <el-tab-pane :label="tab.name" :name="tab.id">
-                        <el-tooltip slot="label" :content="tab.name">
-                            <span>{{truncateLabelStr(tab.name)}}</span>
+                <template v-for="gallery in $store.state.Gallery.viewers">
+                    <el-tab-pane :label="gallery.name" :name="gallery.id">
+                        <el-tooltip slot="label" :content="gallery.name">
+                            <span>{{truncateLabelStr(gallery.name)}}</span>
                         </el-tooltip>
                         <instance></instance>
                     </el-tab-pane>
