@@ -6,27 +6,41 @@
                      v-on:drop="drop">
                     <el-row>
                         <el-button-group>
-                            <el-button @click="historyBack">
-                                <i class="el-icon-arrow-left"></i>
-                            </el-button>
-                            <el-button @click="historyForward">
-                                <i class="el-icon-arrow-right el-icon--right"></i>
-                            </el-button>
+                            <el-tooltip content="Back" :open-delay="topTooltipDelay">
+                                <el-button label="back" @click="historyBack">
+                                    <i class="el-icon-arrow-left"></i>
+                                </el-button>
+                            </el-tooltip>
+                            <el-tooltip content="Forward" :open-delay="topTooltipDelay">
+                                <el-button @click="historyForward">
+                                    <i class="el-icon-arrow-right el-icon--right"></i>
+                                </el-button>
+                            </el-tooltip>
                         </el-button-group>
                         <el-button-group style="margin-left: 10px;">
-                            <el-button :autofocus="shallButtonFocus('/gallery')" @click="redirect('/gallery')">
-                                <i class="el-icon-picture-outline"></i>
-                            </el-button>
-                            <el-button :autofocus="shallButtonFocus('/viewer')" @click="redirect('/viewer')">
-                                <i class="el-icon-view"></i>
-                            </el-button>
-                            <el-button :autofocus="shallButtonFocus('/setting')" @click="redirect('/setting')">
-                                <i class="el-icon-setting"></i>
-                            </el-button>
+                            <el-tooltip content="Gallery" :open-delay="topTooltipDelay">
+                                <el-button @click="redirect('/gallery')">
+                                    <i class="el-icon-picture-outline"></i>
+                                </el-button>
+                            </el-tooltip>
+                            <el-tooltip content="Viewer" :open-delay="topTooltipDelay">
+                                <el-button @click="redirect('/viewer')">
+                                    <i class="el-icon-view"></i>
+                                </el-button>
+                            </el-tooltip>
+                            <el-tooltip content="Setting" :open-delay="topTooltipDelay">
+                                <el-button @click="redirect('/setting')">
+                                    <i class="el-icon-setting"></i>
+                                </el-button>
+                            </el-tooltip>
                         </el-button-group>
                         <el-button-group style="float: right;">
-                            <el-button v-if="shallDisplayPlusButton()"><i class="el-icon-plus"></i></el-button>
-                            <el-button><i class="el-icon-menu"></i></el-button>
+                            <el-tooltip v-if="shallDisplayPlusButton()" content="Add" :open-delay="topTooltipDelay">
+                                <el-button v-if="shallDisplayPlusButton()"><i class="el-icon-plus"></i></el-button>
+                            </el-tooltip>
+                            <el-tooltip content="Full Screen" :open-delay="topTooltipDelay">
+                                <el-button><i class="el-icon-menu"></i></el-button>
+                            </el-tooltip>
                         </el-button-group>
                     </el-row>
                 </div>
@@ -43,7 +57,6 @@
     .el-main {
         padding: 0 20px;
     }
-
     .app-main-router {
         height: 100%;
     }
@@ -73,7 +86,7 @@
     export default class Root extends Vue {
         @Model() dynamicMainHeight: number = 0;
 
-        //FIXME 给所有顶层按键添加tooltips，参照viewer页面的做法
+        private topTooltipDelay = 500; // ms
 
         historyBack() {
             alert('historyBack');
@@ -85,10 +98,6 @@
 
         shallDisplayPlusButton() {
             return this.$route.path !== '/setting';
-        }
-
-        shallButtonFocus(path: string) {
-            return this.$route.path === path;
         }
 
         redirect(path: string) {
