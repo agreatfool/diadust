@@ -6,9 +6,9 @@ import {Module, Mutation} from "vuex";
 // }
 
 // Mutations
-const viewerActivateTab: Mutation<State> = function (state: State, payload: string) {
-    state.activeTab = payload; // Gallery.id
-};
+// const viewerActivateTab: Mutation<State> = function (state: State, galleryId: string) {
+//     state.activeTab = galleryId; // Gallery.id
+// };
 
 // const viewerTabAdd: Mutation<State> = function (state: State, payload: ViewerNavTab) {
 //     state.tabs.push(payload);
@@ -32,17 +32,17 @@ const viewerActivateTab: Mutation<State> = function (state: State, payload: stri
 
 // State
 export interface State {
-    activeTab: string;
+    // activeTab: string;
 }
 
 // Store
 export const Store: Module<State, {}> = {
     state: {
-        activeTab: '',
+        // activeTab: '',
         // tabs: [],
     } as State,
     mutations: {
-        viewerActivateTab,
+        // viewerActivateTab,
         // viewerTabAdd,
         // viewerTabRemove,
     },

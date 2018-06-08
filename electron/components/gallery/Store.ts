@@ -22,11 +22,28 @@ export interface Gallery {
 export interface State {
     gallery: Gallery, // Gallery page
     viewers: Array<Gallery>; // Viewer page, tabs
+    activeViewerTab: string; // Viewer page, activated tab id (gallery id)
 }
 
 // Mutations
-const galleryViewerAdd: Mutation<State> = function (state: State, payload: Gallery) {
-    state.viewers.push(payload);
+const galleryViewerAdd: Mutation<State> = function (state: State, gallery: Gallery) {
+    state.viewers.push(gallery);
+    state.activeViewerTab = gallery.id;
+};
+
+const galleryViewerRemove: Mutation<State> = function (state: State, galleryId: string) {
+    let foundIndex = -1;
+    state.viewers.forEach((gallery: Gallery, index: number) => {
+        if (gallery.id === galleryId) {
+            foundIndex = index;
+        }
+    });
+
+    if (foundIndex !== -1) {
+        let nextTab = state.viewers[foundIndex + 1] || state.viewers[foundIndex - 1];
+        state.viewers.splice(foundIndex, 1);
+        state.activeViewerTab = nextTab ? nextTab.id : '';
+    }
 };
 
 // Actions
@@ -40,10 +57,12 @@ const galleryViewerAdd: Mutation<State> = function (state: State, payload: Galle
 export const Store: Module<State, {}> = {
     state: {
         gallery: {} as Gallery,
-        viewers: []
+        viewers: [],
+        activeViewerTab: '',
     },
     mutations: {
-        galleryViewerAdd
+        galleryViewerAdd,
+        galleryViewerRemove
     },
     actions: {
         // fetchImages

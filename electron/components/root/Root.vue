@@ -104,7 +104,7 @@
             if (galleries.length > 0) {
                 galleries.forEach((gallery) => {
                     this.$store.commit('galleryViewerAdd', gallery);
-                    this.$store.commit('viewerActivateTab', gallery.id);
+                    // this.$store.commit('viewerActivateTab', gallery.id);
                 });
             }
         }

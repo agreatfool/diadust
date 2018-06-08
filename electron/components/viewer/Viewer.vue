@@ -2,7 +2,7 @@
     <div>
         <template v-if="$store.state.Gallery.viewers.length > 0">
             <el-tabs tab-position="right"
-                     v-model="$store.state.Viewer.activeTab"
+                     v-model="$store.state.Gallery.activeViewerTab"
                      closable @tab-remove="tabRemove"
                      class="nav_tab">
                 <template v-for="tab in $store.state.Gallery.viewers">
@@ -49,7 +49,7 @@
         }
 
         tabRemove(name: string) {
-            // this.$store.commit('viewerTabRemove', name);
+            this.$store.commit('galleryViewerRemove', name);
         }
     }
 </script>
