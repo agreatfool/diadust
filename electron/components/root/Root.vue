@@ -73,6 +73,8 @@
     export default class Root extends Vue {
         @Model() dynamicMainHeight: number = 0;
 
+        //FIXME 给所有顶层按键添加tooltips，参照viewer页面的做法
+
         historyBack() {
             alert('historyBack');
         }
