@@ -1,14 +1,14 @@
 <template>
     <div>
-        <template v-if="$store.state.Viewer.tabs.length > 0">
+        <template v-if="$store.state.Gallery.viewers.length > 0">
             <el-tabs tab-position="right"
                      v-model="$store.state.Viewer.activeTab"
                      closable @tab-remove="tabRemove"
                      class="nav_tab">
-                <template v-for="tab in $store.state.Viewer.tabs">
-                    <el-tab-pane :label="tab.label" :name="tab.name">
-                        <el-tooltip slot="label" :content="tab.label">
-                            <span>{{truncateLabelStr(tab.label)}}</span>
+                <template v-for="tab in $store.state.Gallery.viewers">
+                    <el-tab-pane :label="tab.name" :name="tab.id">
+                        <el-tooltip slot="label" :content="tab.name">
+                            <span>{{truncateLabelStr(tab.name)}}</span>
                         </el-tooltip>
                         <instance></instance>
                     </el-tab-pane>
@@ -49,7 +49,7 @@
         }
 
         tabRemove(name: string) {
-            this.$store.commit('viewerTabRemove', name);
+            // this.$store.commit('viewerTabRemove', name);
         }
     }
 </script>

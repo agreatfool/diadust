@@ -1,11 +1,13 @@
 import * as LibFs from 'fs';
 import * as LibPath from 'path';
 
+import * as uuidV4 from 'uuid/v4';
 import * as readChunk from 'read-chunk';
 import * as fileType from 'file-type';
 
 import {readDirSortedSync} from './File';
-import {LocalFile, ValidDropType, ValidImageType} from "../model/Drop";
+import {LocalFile, ValidArchiveType, ValidDropType, ValidImageType} from "../model/Drop";
+import {Gallery, GALLERY_TYPE_ARCH, GALLERY_TYPE_DIR, GALLERY_TYPE_FILES} from "../components/gallery/Store";
 
 export type DropFiles = { [key: string]: Array<LocalFile> };
 
@@ -121,4 +123,32 @@ export const handleDropEvent = function (event: DragEvent): DropFiles {
 
 const checkDropFileIsDir = function (file: File) {
     return file && file.type === '' && LibFs.statSync((file as any).path).isDirectory();
+};
+
+export const dropFilesToGalleryType = function (dirs: DropFiles): Array<Gallery> {
+    let galleries = [] as Array<Gallery>;
+
+    for (let key in dirs) {
+        let type = key === 'root' ? GALLERY_TYPE_FILES : GALLERY_TYPE_DIR;
+
+        const files = dirs[key] as Array<LocalFile>;
+
+        // only has one file && file type is archive
+        if (files.length === 1) {
+            const filetype = fileType(readChunk.sync(files[0].path, 0, 4100));
+            if (filetype && ValidArchiveType.indexOf(filetype.mime) !== -1) {
+                type = GALLERY_TYPE_ARCH;
+            }
+        }
+
+        galleries.push({
+            id: uuidV4(),
+            type: type,
+            name: type === GALLERY_TYPE_DIR ? key : files[0].path,
+            files: files,
+            pageNum: 0,
+        } as Gallery);
+    }
+
+    return galleries;
 };

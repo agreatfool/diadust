@@ -24,6 +24,7 @@ export const ValidDropType = [
 ];
 
 export const ValidImageType = ValidDropType.slice(0, 4); // end not included
+export const ValidArchiveType = ValidDropType.slice(4);
 
 export interface LocalFile {
     name: string;

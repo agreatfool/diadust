@@ -60,8 +60,8 @@
     import Viewer from '../viewer/Viewer.vue';
 
     // import {LocalImage} from '../../model/Image';
-    import {ViewerNavTab} from '../viewer/Store';
-    import {DropFiles, handleDropEvent} from '../../lib/Drop';
+    // import {ViewerNavTab} from '../viewer/Store';
+    import {DropFiles, handleDropEvent, dropFilesToGalleryType} from '../../lib/Drop';
 
     @Component({
         router,
@@ -99,37 +99,14 @@
             event.preventDefault();
 
             const dirs: DropFiles = handleDropEvent(event);
-            console.log(dirs);
+            const galleries = dropFilesToGalleryType(dirs);
 
-            // let dirs = {} as {[key: string]: Array<LocalImage>};
-            // let files = [] as Array<File>;
-            //
-            // if (event.dataTransfer.items) {
-            //     for (let i = 0; i < event.dataTransfer.items.length; i++) {
-            //         const item = event.dataTransfer.items[i] as DataTransferItem;
-            //         if (item.kind !== 'file') {
-            //             continue;
-            //         }
-            //
-            //         let file: File = item.getAsFile();
-            //         if (checkDropFileIsDir(file)) {
-            //             readDirFiles
-            //         }
-            //
-            //         if (file) {
-            //             files.push(file);
-            //         }
-            //     }
-            // }
-            //
-            // if (files.length === 0) {
-            //     return;
-            // }
-            //
-            // this.$store.commit('viewerTabAdd', {
-            //     label: files.length === 1 ? files[0].name : `${files[0].name}...`,
-            //     name: uuidV4(),
-            // } as ViewerNavTab);
+            if (galleries.length > 0) {
+                galleries.forEach((gallery) => {
+                    this.$store.commit('galleryViewerAdd', gallery);
+                    this.$store.commit('viewerActivateTab', gallery.id);
+                });
+            }
         }
 
         setDynamicMainHeight() {
