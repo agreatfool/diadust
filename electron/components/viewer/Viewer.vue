@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="viewer">
         <template v-if="$store.state.Gallery.viewers.length > 0">
             <el-tabs tab-position="right"
                      v-model="$store.state.Gallery.activeViewerTab"
@@ -10,7 +10,7 @@
                         <el-tooltip slot="label" :content="gallery.name">
                             <span>{{truncateLabelStr(gallery.name)}}</span>
                         </el-tooltip>
-                        <instance></instance>
+                        <gallery :id="gallery.id"></gallery>
                     </el-tab-pane>
                 </template>
             </el-tabs>
@@ -19,19 +19,32 @@
 </template>
 
 <style>
+    .viewer {
+        height: 100%;
+    }
+
     .nav_tab {
-        height: 320px;
+        height: 100%;
+    }
+
+    .el-tabs__content {
+        height: 100%;
+    }
+
+    .el-tab-pane {
+        height: 100%;
+        overflow-y: auto;
     }
 </style>
 
 <script lang="ts">
     import {Component, Prop, Vue} from "vue-property-decorator";
 
-    import Instance from './Instance.vue';
+    import Gallery from '../gallery/Gallery.vue';
 
     @Component({
         components: {
-            Instance,
+            Gallery,
         }
     })
     export default class Viewer extends Vue {
@@ -49,7 +62,7 @@
         }
 
         tabRemove(name: string) {
-            this.$store.commit('galleryViewerRemove', name);
+            this.$store.commit('galleryViewerTabRemove', name);
         }
     }
 </script>

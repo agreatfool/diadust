@@ -112,7 +112,7 @@
 
             if (galleries.length > 0) {
                 galleries.forEach((gallery) => {
-                    this.$store.commit('galleryViewerAdd', gallery);
+                    this.$store.commit('galleryViewerTabAdd', gallery);
 
                     this.$notify({
                         title: 'Viewer tab added',

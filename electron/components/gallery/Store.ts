@@ -26,12 +26,12 @@ export interface State {
 }
 
 // Mutations
-const galleryViewerAdd: Mutation<State> = function (state: State, gallery: Gallery) {
+const galleryViewerTabAdd: Mutation<State> = function (state: State, gallery: Gallery) {
     state.viewers.push(gallery);
     state.activeViewerTab = gallery.id;
 };
 
-const galleryViewerRemove: Mutation<State> = function (state: State, galleryId: string) {
+const galleryViewerTabRemove: Mutation<State> = function (state: State, galleryId: string) {
     let foundIndex = -1;
     state.viewers.forEach((gallery: Gallery, index: number) => {
         if (gallery.id === galleryId) {
@@ -43,6 +43,19 @@ const galleryViewerRemove: Mutation<State> = function (state: State, galleryId: 
         let nextTab = state.viewers[foundIndex + 1] || state.viewers[foundIndex - 1];
         state.viewers.splice(foundIndex, 1);
         state.activeViewerTab = nextTab ? nextTab.id : '';
+    }
+};
+
+const galleryViewerPageNumPlus: Mutation<State> = function (state: State, galleryId: string) {
+    let foundIndex = -1;
+    state.viewers.forEach((gallery: Gallery, index: number) => {
+        if (gallery.id === galleryId) {
+            foundIndex = index;
+        }
+    });
+
+    if (foundIndex !== -1) {
+        state.viewers[foundIndex].pageNum++;
     }
 };
 
@@ -61,8 +74,9 @@ export const Store: Module<State, {}> = {
         activeViewerTab: '',
     },
     mutations: {
-        galleryViewerAdd,
-        galleryViewerRemove
+        galleryViewerTabAdd,
+        galleryViewerTabRemove,
+        galleryViewerPageNumPlus
     },
     actions: {
         // fetchImages
