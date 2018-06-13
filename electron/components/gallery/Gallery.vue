@@ -1,13 +1,11 @@
 <template>
-    <div class="gallery" ref="mugenref"><!-- FIXME @3 ref真的有用么 -->
-        <!--<div v-on:dragover.prevent-->
-        <!--v-on:drop="drop"-->
-        <!--class="grid">-->
-        <!--</div>-->
+    <div class="gallery" ref="ref"
+         v-on:dragover.prevent
+         v-on:drop="drop">
         <div v-masonry
              transition-duration="0.3s"
              item-selector=".grid-item"
-             class="grid users">
+             class="grid">
             <div v-masonry-tile class="grid-item user" v-for="user in users">
                 <img class="avatar" :src="user.avatar_url" height="40" alt="">
                 <h2>{{ user.login }}</h2>
@@ -17,7 +15,7 @@
                 class="mugen"
                 :handler="fetchData"
                 :should-handle="!isLoading"
-                scroll-container="mugenref">
+                scroll-container="ref">
             loading
         </mugen-scroll>
     </div>

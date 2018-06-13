@@ -113,6 +113,13 @@
             if (galleries.length > 0) {
                 galleries.forEach((gallery) => {
                     this.$store.commit('galleryViewerAdd', gallery);
+
+                    this.$notify({
+                        title: 'Viewer tab added',
+                        message: '',
+                        type: 'success',
+                        duration: 2500
+                    });
                 });
             }
         }
