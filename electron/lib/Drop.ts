@@ -146,6 +146,7 @@ export const dropFilesToGalleryType = function (dirs: DropFiles): Array<Gallery>
             type: type,
             name: type === GALLERY_TYPE_DIR ? key : files[0].path,
             files: files,
+            lastPageNum: 0,
             pageNum: 0,
         } as Gallery);
     }

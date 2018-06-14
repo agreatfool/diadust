@@ -6,8 +6,8 @@
                      closable @tab-remove="tabRemove"
                      class="nav_tab">
                 <template v-for="gallery in $store.state.Gallery.viewers">
-                    <el-tab-pane :label="gallery.name" :name="gallery.id">
-                        <el-tooltip slot="label" :content="gallery.name">
+                    <el-tab-pane :label="gallery.name" :name="gallery.id" :lazy="beLazy">
+                        <el-tooltip slot="label" :content="gallery.name" placement="top">
                             <span>{{truncateLabelStr(gallery.name)}}</span>
                         </el-tooltip>
                         <gallery :id="gallery.id"></gallery>
@@ -52,9 +52,10 @@
             default: ''
         }) galleryId: string;
 
+        private beLazy: boolean = true;
+
         constructor() {
             super();
-            this.galleryId = '';
         }
 
         truncateLabelStr(str: string) {

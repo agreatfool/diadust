@@ -15,7 +15,8 @@ export interface Gallery {
     type: string; // default is 'gallery', 'files' | 'directory' | 'archive'
     name: string; // default is 'gallery', files: first file path, dir: dir path, archive: archive file path
     files: Array<GalleryImage | LocalFile>;
-    pageNum: number; // last pagination id number, used to recover page status rendering
+    lastPageNum: number; // last pagination id number, used to recover page status rendering
+    pageNum: number; // current page number, used to fetch data
     releasedFiles?: Array<GalleryImage | LocalFile>; // possibly exists when archive type, released tmp files
 }
 
@@ -59,6 +60,32 @@ const galleryViewerPageNumPlus: Mutation<State> = function (state: State, galler
     }
 };
 
+const galleryViewerPageNumReset: Mutation<State> = function (state: State, galleryId: string) {
+    let foundIndex = -1;
+    state.viewers.forEach((gallery: Gallery, index: number) => {
+        if (gallery.id === galleryId) {
+            foundIndex = index;
+        }
+    });
+
+    if (foundIndex !== -1) {
+        state.viewers[foundIndex].pageNum = 0;
+    }
+};
+
+const galleryViewerPageNumSync: Mutation<State> = function (state: State, galleryId: string) {
+    let foundIndex = -1;
+    state.viewers.forEach((gallery: Gallery, index: number) => {
+        if (gallery.id === galleryId) {
+            foundIndex = index;
+        }
+    });
+
+    if (foundIndex !== -1) {
+        state.viewers[foundIndex].lastPageNum = state.viewers[foundIndex].pageNum;
+    }
+};
+
 // Actions
 // const fetchImages: Action<State, {}> = async function (context: ActionContext<State, {}>, payload: ImageSearchFilter): Promise<any> {
 //     const images = await post('/image/fetch', {} as ImageSearchFilter);
@@ -76,7 +103,9 @@ export const Store: Module<State, {}> = {
     mutations: {
         galleryViewerTabAdd,
         galleryViewerTabRemove,
-        galleryViewerPageNumPlus
+        galleryViewerPageNumPlus,
+        galleryViewerPageNumReset,
+        galleryViewerPageNumSync,
     },
     actions: {
         // fetchImages

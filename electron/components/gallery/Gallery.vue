@@ -15,7 +15,7 @@
                 :handler="fetchData"
                 :should-handle="shouldHandleScroll"
                 scroll-container="ref">
-            {{isOutofData ? 'no more data' : 'loading ...'}}
+            {{isOutofData ? `no more data ... ${files.length}` : `loading ... ${files.length}`}}
         </mugen-scroll>
     </div>
 </template>
@@ -64,6 +64,7 @@
 
         private isOutofData: boolean = false;
         private isLoading: boolean = false;
+        private isMounted: boolean = false;
 
         private files: Array<GalleryImage | LocalFile> = [];
 
@@ -102,11 +103,26 @@
         }
 
         mounted() {
+            this.isMounted = true;
             // this.$store.dispatch('fetchImages').then(_ => _);
-            console.log(this.id);
+            console.log('mounted', 'id', this.id, 'isOutofData', this.isOutofData, 'isLoading', this.isLoading);
 
             // FIXME 使用test在viewer里创建一个tab，按gallery切到gallery页面，再返回viewer，发现显示不正常
             // 多tab和多按钮router之间的状态切换和保留需要制作
+        }
+
+        beforeDestroy() {
+            const gallery: GalleryState = this.getCurrentGalleryState();
+
+            if (gallery === null || (gallery.pageNum === 1 && gallery.lastPageNum === 0)) {
+                // only loaded data once on page initialized, shall not sync lastPageNum,
+                // since next page load shall also be treated as new page init,
+                // also do't forget reset current page number
+                this.$store.commit('galleryViewerPageNumReset', this.id);
+                return;
+            }
+
+            this.$store.commit('galleryViewerPageNumSync', this.id); // sync page num when leave
         }
 
         async fetchGallery() {
@@ -125,36 +141,45 @@
         }
 
         async fetchLocal() {
-            // const id = this.id;
-            const id = this.$store.state.Gallery.activeViewerTab; //FIXME
-            const viewers = this.$store.state.Gallery.viewers;
-            let gallery: GalleryState;
-            let pageNum: number;
-            let files: Array<LocalFile>;
-            let fetched: Array<LocalFile>;
+            this.isLoading = true;
 
-            viewers.forEach((viewer: GalleryState) => {
-                if (viewer.id === id) {
-                    gallery = viewer;
-                }
-            });
-
-            if (!gallery) {
+            const gallery: GalleryState = this.getCurrentGalleryState();
+            if (gallery === null) {
+                console.log('fetchLocal, no gallery found');
                 this.isOutofData = true;
                 return;
             }
 
-            pageNum = gallery.pageNum;
-            files = gallery.files as Array<LocalFile>;
-            fetched = files.slice(this.itemsPerFetch * pageNum, this.itemsPerFetch * (pageNum + 1));
+            let lastPageNum: number = gallery.lastPageNum;
+            let pageNum: number = gallery.pageNum;
+            let files: Array<LocalFile> = gallery.files as Array<LocalFile>;
 
-            if (fetched.length < this.itemsPerFetch) {
+            const initialized = this.isMounted || (lastPageNum === 0 && pageNum === 0);
+
+            let startPos: number;
+            let endPos: number;
+            if (initialized) {
+                startPos = this.itemsPerFetch * pageNum;
+                endPos = this.itemsPerFetch * (pageNum + 1);
+            } else {
+                startPos = 0;
+                endPos = this.itemsPerFetch * lastPageNum;
+            }
+
+            //FIXME 复位时候文件量大了，页面会卡顿，因为一次性加入的DOM节点过多，需要做异步逐步加入DOM的行为
+            let fetched: Array<LocalFile> = files.slice(startPos, endPos);
+            if (fetched.length < (endPos - startPos)) {
                 this.isOutofData = true;
             }
+            console.log('fetchLocal', 'id', this.id, 'lastPageNum', lastPageNum, 'pageNum', pageNum, 'start', startPos, 'end', endPos, 'fetched', fetched.length, 'isOutofData', this.isOutofData);
 
             this.files = [...this.files, ...fetched];
 
-            this.$store.commit('galleryViewerPageNumPlus', id);
+            if (!this.isOutofData && initialized) { // only add page number if data loading is doing after page mounted, means not initializing status
+                this.$store.commit('galleryViewerPageNumPlus', this.id);
+            }
+
+            this.isLoading = false;
         }
 
         drop(event: DragEvent) {
@@ -165,6 +190,20 @@
 
             alert('Gallery dropped');
             // 在这里触发往gallery添加图片的事件
+        }
+
+        getCurrentGalleryState(): GalleryState {
+            const id = this.id;
+            const viewers = this.$store.state.Gallery.viewers;
+            let gallery: GalleryState = null;
+
+            viewers.forEach((viewer: GalleryState) => {
+                if (viewer.id === id) {
+                    gallery = viewer;
+                }
+            });
+
+            return gallery;
         }
     }
 </script>
