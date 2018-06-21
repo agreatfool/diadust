@@ -4,6 +4,7 @@ import ImagesLoaded from 'imagesloaded'
 import * as Masonry from 'masonry-layout';
 import {VueConstructor} from "vue/types/vue";
 import {DirectiveFunction} from "vue/types/options";
+import {VNodeDirective} from "vue/types/vnode";
 
 interface Options {
     columnWidth: number;
@@ -19,6 +20,7 @@ interface Options {
 
     [key: string]: ValidOptionValue;
 }
+
 type ValidOptionValue = number | string | boolean;
 
 const attributesMap: { [key: string]: string } = {
@@ -31,7 +33,7 @@ const attributesMap: { [key: string]: string } = {
     'stamp': 'stamp',
     'gutter': 'gutter',
     'percent-position': 'percentPosition',
-    'horizontal-order': 'horizontalOrder'
+    'horizontal-order': 'horizontalOrder',
 };
 const EVENT_ADD = 'vuemasonry.itemAdded';
 const EVENT_REMOVE = 'vuemasonry.itemRemoved';
@@ -53,29 +55,40 @@ const install = function (Vue: VueConstructor) {
     const Events = new Vue();
 
     Vue.directive('masonry', {
-        //props: ['transitionDuration', 'itemSelector'],
-        inserted: function (el: HTMLElement) {
+        // props: ['transitionDuration', 'itemSelector'],
+        inserted: function (el: HTMLElement, binding: VNodeDirective) {
             if (!Masonry) {
                 throw new Error('Masonry plugin is not defined. Please check it\'s connected and parsed correctly.')
             }
-            const masonry = new Masonry(el, collectOptions(el.attributes));
+
+            const options = collectOptions(el.attributes) as Options;
+            const masonry = new Masonry(el, options);
+
             const masonryDraw = function () {
                 (masonry as any).reloadItems();
                 (masonry as any).layout();
             };
+
+            // usage: <div v-masonry:complete="layoutCompleted" ...></div>
+            const onLayoutCompleted = function (laidOutItems: Array<any>) {
+                binding.value(laidOutItems);
+            };
+            if (binding.arg === 'complete' && typeof binding.value === 'function') {
+                (masonry as any).on('layoutComplete', onLayoutCompleted);
+            }
+
             Vue.nextTick(function () {
                 masonryDraw();
             });
-
             const masonryRedrawHandler = function () {
                 masonryDraw();
             };
-
             const masonryDestroyHandler = function () {
                 Events.$off(EVENT_ADD, masonryRedrawHandler);
                 Events.$off(EVENT_REMOVE, masonryRedrawHandler);
                 Events.$off(EVENT_IMAGE_LOADED, masonryRedrawHandler);
                 Events.$off(EVENT_DESTROY, masonryDestroyHandler);
+                (masonry as any).off('layoutComplete', onLayoutCompleted);
                 (masonry as any).destroy();
             };
 
