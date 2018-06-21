@@ -3,11 +3,16 @@
          v-on:dragover.prevent
          v-on:drop="drop">
         <div v-masonry
+             column-width=".grid-sizer"
              transition-duration="0.3s"
              item-selector=".grid-item"
+             gutter=".gutter-sizer"
+             fit-width=true
              class="grid">
-            <div v-masonry-tile class="grid-item user" v-for="file in files">
-                <img class="avatar" :src="`file://${file.path}`" width="200" alt="">
+            <div class="grid-sizer"></div>
+            <div class="gutter-sizer"></div>
+            <div v-masonry-tile class="grid-item" v-for="file in files">
+                <img class="grid-item-img" :src="`file://${file.path}`" alt="">
             </div>
         </div>
         <mugen-scroll
@@ -24,6 +29,23 @@
     .gallery {
         height: 100%;
         overflow-y: auto;
+    }
+
+    .grid {
+        margin: 0 auto;
+    }
+
+    .grid-sizer,
+    .grid-item {
+        width: 200px;
+    }
+
+    .grid-item-img {
+        max-width: 100%;
+    }
+
+    .gutter-sizer {
+        width: 10px;
     }
 
     .mugen {

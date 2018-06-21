@@ -88,6 +88,8 @@
 
         private topTooltipDelay = 500; // ms
 
+        // FIXME 历史状态回溯，以及绑定返回前进按钮
+
         historyBack() {
             alert('historyBack');
         }
