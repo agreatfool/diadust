@@ -188,14 +188,30 @@
                 endPos = this.itemsPerFetch * lastPageNum;
             }
 
-            //FIXME 复位时候文件量大了，页面会卡顿，因为一次性加入的DOM节点过多，需要做异步逐步加入DOM的行为
+            //FIXME 复位时候文件量大了，页面会卡顿，因为一次性加入的DOM节点过多，需要做异步逐步加入DOM的行为 | DONE
+            //FIXME 显示loading的图样
             let fetched: Array<LocalFile> = files.slice(startPos, endPos);
             if (fetched.length < (endPos - startPos)) {
                 this.isOutofData = true;
             }
-            console.log('fetchLocal', 'id', this.id, 'lastPageNum', lastPageNum, 'pageNum', pageNum, 'start', startPos, 'end', endPos, 'fetched', fetched.length, 'isOutofData', this.isOutofData);
 
-            this.files = [...this.files, ...fetched];
+            const handleDataByPage = async () => {
+                return new Promise((resolve) => {
+                    let spliced = fetched.splice(0, this.itemsPerFetch);
+                    this.files = [...this.files, ...spliced];
+
+                    if (fetched.length > 0) {
+                        setTimeout(() => {
+                            resolve();
+                        }, 100); // 100ms
+                    } else {
+                        resolve();
+                    }
+                });
+            };
+            while (fetched.length > 0) {
+                await handleDataByPage();
+            }
 
             if (!this.isOutofData && initialized) { // only add page number if data loading is doing after page mounted, means not initializing status
                 this.$store.commit('galleryViewerPageNumPlus', this.id);
