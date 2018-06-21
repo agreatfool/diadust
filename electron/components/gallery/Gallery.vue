@@ -12,7 +12,7 @@
             <div class="grid-sizer"></div>
             <div class="gutter-sizer"></div>
             <div v-masonry-tile class="grid-item" v-for="file in files">
-                <img class="grid-item-img" :src="`file://${file.path}`" alt="">
+                <img class="grid-item-img" :src="`file://${file.path}`" @click="imgClick" alt="">
             </div>
         </div>
         <mugen-scroll
@@ -42,6 +42,16 @@
 
     .grid-item-img {
         max-width: 100%;
+        user-drag: none;
+        user-select: none;
+        -moz-user-select: none;
+        -webkit-user-drag: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+    }
+
+    .grid-item-img:hover {
+        cursor: pointer;
     }
 
     .gutter-sizer {
@@ -90,12 +100,6 @@
 
         private files: Array<GalleryImage | LocalFile> = [];
 
-        private users: Array<any> = [];
-        private count: number = 0;
-
-        //FIXME @1 如何处理：当第一次加载数据过少，滚动条不生成的情况下，后续如何触发获取数据事件
-        //FIXME @2 如何调整单元格的默认宽度？现在应该是格子内容撑多大，则格子就多大
-
         constructor() {
             super();
         }
@@ -115,22 +119,10 @@
             } else {
                 await this.fetchLocal();
             }
-
-            // FIXME @1 是否在这里进行高度检查？高度不够则继续加载数据
-            // const gallery = document.querySelector('.gallery');
-            // const grids = document.querySelector('.grid');
-            // if (gallery.clientHeight >= grids.clientHeight) {
-            //     await this.fetchData();
-            // }
         }
 
         mounted() {
             this.isMounted = true;
-            // this.$store.dispatch('fetchImages').then(_ => _);
-            console.log('mounted', 'id', this.id, 'isOutofData', this.isOutofData, 'isLoading', this.isLoading);
-
-            // FIXME 使用test在viewer里创建一个tab，按gallery切到gallery页面，再返回viewer，发现显示不正常
-            // 多tab和多按钮router之间的状态切换和保留需要制作
         }
 
         beforeDestroy() {
@@ -140,7 +132,7 @@
                 // only loaded data once on page initialized, shall not sync lastPageNum,
                 // since next page load shall also be treated as new page init,
                 // also do't forget reset current page number
-                this.$store.commit('galleryViewerPageNumReset', this.id);
+                this.$store.commit('galleryViewerPageNumReset', this.id); // reset
                 return;
             }
 
@@ -148,18 +140,18 @@
         }
 
         async fetchGallery() {
-            this.isLoading = true;
-            console.log('start fetching');
-
-            return fetch('https://api.github.com/users?since=' +
-                `${(this.users.length > 0 && this.users[this.users.length - 1].id) || null}`)
-                .then(_ => _.json())
-                .then(result => {
-                    console.log('fetch done');
-                    this.users = [...this.users, ...result];
-                    this.count++;
-                    this.isLoading = false;
-                });
+            // this.isLoading = true;
+            // console.log('start fetching');
+            //
+            // return fetch('https://api.github.com/users?since=' +
+            //     `${(this.users.length > 0 && this.users[this.users.length - 1].id) || null}`)
+            //     .then(_ => _.json())
+            //     .then(result => {
+            //         console.log('fetch done');
+            //         this.users = [...this.users, ...result];
+            //         this.count++;
+            //         this.isLoading = false;
+            //     });
         }
 
         async fetchLocal() {
@@ -188,8 +180,6 @@
                 endPos = this.itemsPerFetch * lastPageNum;
             }
 
-            //FIXME 复位时候文件量大了，页面会卡顿，因为一次性加入的DOM节点过多，需要做异步逐步加入DOM的行为 | DONE
-            //FIXME 显示loading的图样
             let fetched: Array<LocalFile> = files.slice(startPos, endPos);
             if (fetched.length < (endPos - startPos)) {
                 this.isOutofData = true;
@@ -227,7 +217,12 @@
             }
 
             alert('Gallery dropped');
-            // 在这里触发往gallery添加图片的事件
+            // TODO 在这里触发往gallery添加图片的事件
+        }
+
+        imgClick(event: MouseEvent) {
+            // TODO 查看图片
+            console.log(event);
         }
 
         getCurrentGalleryState(): GalleryState {
