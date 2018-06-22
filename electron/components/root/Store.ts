@@ -1,7 +1,7 @@
 import Vue from "vue";
-import Vuex, {Module} from "vuex";
+import Vuex, {Module, Mutation} from "vuex";
 
-import {State as GalleryState, Store as GalleryStore} from "../gallery/Store";
+import {Gallery, State as GalleryState, Store as GalleryStore} from "../gallery/Store";
 import {State as SettingState, Store as SettingStore} from "../setting/Store";
 // import {DropItems} from "../../model/Drop";
 
@@ -18,20 +18,26 @@ Vue.use(Vuex);
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 // Root store mutations & actions
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
-
+const rootImageSet: Mutation<State> = function (state: State, filePath: string) {
+    state.image = filePath;
+};
 
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 // Root store
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 export interface State {
     // histories: Array<ActionHistory>;
+    image: string; // path to local image file
 }
 
 export const Store: Module<State, {}> = {
     state: {
         // histories: [],
+        image: '',
     },
-    mutations: {},
+    mutations: {
+        rootImageSet,
+    },
     actions: {}
 };
 

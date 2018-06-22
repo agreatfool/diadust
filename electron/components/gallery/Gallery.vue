@@ -222,7 +222,10 @@
 
         imgClick(event: MouseEvent) {
             // TODO 查看图片
-            console.log(event);
+            const filePath = (event.srcElement as any).src;
+            if (filePath) {
+                this.$store.commit('rootImageSet', filePath);
+            }
         }
 
         getCurrentGalleryState(): GalleryState {

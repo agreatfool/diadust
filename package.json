@@ -39,6 +39,7 @@
   "homepage": "https://github.com/agreatfool/diadust#readme",
   "devDependencies": {
     "@types/file-type": "5.2.1",
+    "@types/keypress.js": "2.1.0",
     "@types/masonry-layout": "4.2.0",
     "@types/node": "8.10.17",
     "@types/node-fetch": "2.1.1",
@@ -52,6 +53,7 @@
     "file-loader": "1.1.11",
     "file-type": "8.0.0",
     "imagesloaded": "4.1.4",
+    "keypress.js": "2.1.5",
     "masonry-layout": "4.2.1",
     "moment": "2.22.2",
     "postcss-loader": "1.3.3",

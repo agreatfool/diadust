@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <el-container>
+    <div class="main">
+        <el-container v-show="$store.state.Root.image === ''">
             <el-header>
                 <div v-on:dragover.prevent
                      v-on:drop="drop">
@@ -50,10 +50,15 @@
             </el-main>
             <el-footer></el-footer>
         </el-container>
+        <image-viewer v-show="$store.state.Root.image !== ''"></image-viewer>
     </div>
 </template>
 
 <style>
+    .main {
+        width: 100%;
+        height: 100%;
+    }
     .el-main {
         padding: 0 20px;
     }
@@ -71,6 +76,7 @@
     import Gallery from '../gallery/Gallery.vue';
     import Setting from '../setting/Setting.vue';
     import Viewer from '../viewer/Viewer.vue';
+    import ImageViewer from '../gallery/Image.vue';
 
     import {DropFiles, dropFilesToGalleryType, handleDropEvent} from '../../lib/Drop';
 
@@ -78,9 +84,10 @@
         router,
         store,
         components: {
-            gallery: Gallery,
-            setting: Setting,
-            viewer: Viewer,
+            'gallery': Gallery,
+            'setting': Setting,
+            'viewer': Viewer,
+            'image-viewer': ImageViewer,
         }
     })
     export default class Root extends Vue {
@@ -135,7 +142,12 @@
                 window.addEventListener('resize', this.setDynamicMainHeight);
 
                 this.setDynamicMainHeight(); // init
-            })
+            });
+
+            // FIXME dummy test code, remove later
+            setTimeout(() => {
+                this.$store.commit('rootImageSet', 'file:///Users/Jonathan/Downloads/test/output1%E7%9A%84%E5%89%AF%E6%9C%AC%2012.webp');
+            }, 1000);
         }
 
         beforeDestroy() {
