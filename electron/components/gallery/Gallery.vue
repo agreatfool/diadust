@@ -126,7 +126,7 @@
         }
 
         beforeDestroy() {
-            const gallery: GalleryState = this.getCurrentGalleryState();
+            const gallery: GalleryState = this.getCurrentGalleryState() as GalleryState;
 
             if (gallery === null || (gallery.pageNum === 1 && gallery.lastPageNum === 0)) {
                 // only loaded data once on page initialized, shall not sync lastPageNum,
@@ -157,7 +157,7 @@
         async fetchLocal() {
             this.isLoading = true;
 
-            const gallery: GalleryState = this.getCurrentGalleryState();
+            const gallery: GalleryState = this.getCurrentGalleryState() as GalleryState;
             if (gallery === null) {
                 console.log('fetchLocal, no gallery found');
                 this.isOutofData = true;
@@ -228,10 +228,10 @@
             }
         }
 
-        getCurrentGalleryState(): GalleryState {
+        getCurrentGalleryState(): GalleryState | null {
             const id = this.id;
             const viewers = this.$store.state.Gallery.viewers;
-            let gallery: GalleryState = null;
+            let gallery: GalleryState | null = null;
 
             viewers.forEach((viewer: GalleryState) => {
                 if (viewer.id === id) {

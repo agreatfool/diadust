@@ -50,7 +50,7 @@
             </el-main>
             <el-footer></el-footer>
         </el-container>
-        <image-viewer v-show="$store.state.Root.image !== ''"></image-viewer>
+        <image-viewer v-if="$store.state.Root.image !== ''"></image-viewer>
     </div>
 </template>
 
@@ -68,7 +68,7 @@
 </style>
 
 <script lang="ts">
-    import {Component, Model, Vue} from "vue-property-decorator";
+    import {Component, Vue} from "vue-property-decorator";
 
     import {router} from './Router';
     import {store} from './Store';
@@ -91,7 +91,8 @@
         }
     })
     export default class Root extends Vue {
-        @Model() dynamicMainHeight: number = 0;
+
+        private dynamicMainHeight: number = 0;
 
         private topTooltipDelay = 500; // ms
 
