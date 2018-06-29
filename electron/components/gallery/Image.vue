@@ -52,15 +52,6 @@
         }
 
         onImageLoad() {
-            // set scale to use as much space inside the canvas as possible
-            // if (((this.canvas.height / this.image.height) * this.image.width) <= this.canvas.width) {
-            //     this.scale = this.canvas.height / this.image.height;
-            // } else {
-            //     this.scale = this.canvas.width / this.image.width;
-            // }
-
-            this.scale = 1;
-
             // centre at image centre
             this.centre.x = this.image.width / 2;
             this.centre.y = this.image.height / 2;
@@ -105,22 +96,25 @@
             if (this.dirty) {
                 this.dirty = false;
 
+                // this.imgFitWidth();
+                // this.imgFitHeight();
+                // this.imgFitWindow();
+
                 // clear canvas
                 this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
                 // draw image (transformed and scaled)
                 this.context.save();
 
-                // let translateX = this.canvas.width / 2 - this.centre.x * this.scale;
-                // let translateY = this.canvas.height / 2 - this.centre.y * this.scale;
-                //
-                // this.context.translate(translateX, translateY);
+                // this.imgCenteringBoth();
+                // this.imgCenteringX();
+                // this.imgCenteringY();
+
                 this.context.scale(this.scale, this.scale);
 
                 this.context.drawImage(this.image, 0, 0, this.image.width, this.image.height);
 
                 this.context.restore();
-
             }
 
             if (!this.stopRendering) {
@@ -137,6 +131,38 @@
             this.setDimension();
 
             this.dirty = true;
+        }
+
+        imgFitWindow() {
+            // set scale to use as much space inside the canvas as possible
+            if (((this.canvas.height / this.image.height) * this.image.width) <= this.canvas.width) {
+                this.scale = this.canvas.height / this.image.height;
+            } else {
+                this.scale = this.canvas.width / this.image.width;
+            }
+        }
+
+        imgFitWidth() {
+            this.scale = this.canvas.width / this.image.width;
+        }
+
+        imgFitHeight() {
+            this.scale = this.canvas.height / this.image.height;
+        }
+
+        imgCenteringBoth() {
+            let translateX = this.canvas.width / 2 - this.centre.x * this.scale;
+            let translateY = this.canvas.height / 2 - this.centre.y * this.scale;
+
+            this.context.translate(translateX, translateY);
+        }
+
+        imgCenteringX() {
+            this.context.translate(this.canvas.width / 2 - this.centre.x * this.scale, 0);
+        }
+
+        imgCenteringY() {
+            this.context.translate(0, this.canvas.height / 2 - this.centre.y * this.scale);
         }
 
         mounted() {
