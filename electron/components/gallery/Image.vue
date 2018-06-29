@@ -98,8 +98,8 @@
             let deltaY = -(newPos.y - this.mouseLastPos.y);
 
             if (this.leftMouseButtonDown){
-                this.centre.x -= deltaX / this.scale;
-                this.centre.y -= deltaY / this.scale;
+                this.centre.x -= deltaX;
+                this.centre.y -= deltaY;
             }
             this.mouseLastPos = newPos;
             this.dirty = true;
@@ -136,14 +136,12 @@
                 // draw image (transformed and scaled)
                 this.context.save();
 
-                this.context.scale(this.scale, this.scale);
-
                 this.context.drawImage(
                     this.image, // image object
                     this.centre.x - this.image.width / 2 * this.scale, // x pos
                     this.centre.y - this.image.height / 2 * this.scale, // y pos
-                    this.image.width, // draw width
-                    this.image.height // draw height
+                    this.image.width * this.scale, // draw width
+                    this.image.height * this.scale // draw height
                 );
 
                 this.context.restore();
