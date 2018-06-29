@@ -36,6 +36,8 @@
         private centre: Point = {x: 0, y: 0} as Point;
         private scale: number = 1;
         private scaleStep: number = 0.1;
+        private mouseLastPos: Point = {x: 0, y: 0} as Point;
+        private leftMouseButtonDown: boolean = false;
         private stopRendering: boolean = false;
 
         constructor() {
@@ -51,18 +53,6 @@
             ];
         }
 
-        onImageLoad() {
-            // centre at image centre
-            this.centre.x = this.image.width / 2;
-            this.centre.y = this.image.height / 2;
-
-            // image changed
-            this.dirty = true;
-
-            // start new render loop
-            this.renderImage();
-        }
-
         zoomIn() {
             this.scale = this.scale * (1 + this.scaleStep);
             this.dirty = true;
@@ -72,6 +62,14 @@
             this.scale = this.scale * (1 - this.scaleStep);
             this.dirty = true;
         };
+
+        onMouseDown(evt: MouseEvent){
+            this.leftMouseButtonDown = true;
+        }
+
+        onMouseUp(evt: MouseEvent){
+            this.leftMouseButtonDown = false;
+        }
 
         onMouseWheel(evt: Event | undefined) {
             if (!evt) {
@@ -87,8 +85,44 @@
             }
         }
 
-        onMouseMove() {
+        onMouseMove(evt: MouseEvent) {
+            let rect = this.canvas.getBoundingClientRect();
+            let newPos = {
+                x: (evt as MouseEvent).clientX - rect.left,
+                y: (evt as MouseEvent).clientY - rect.top
+            } as Point;
 
+            this.mouseLastPos = this.mouseLastPos || {x: 0, y: 0} as Point;
+
+            let deltaX = -(newPos.x - this.mouseLastPos.x);
+            let deltaY = -(newPos.y - this.mouseLastPos.y);
+
+            if (this.leftMouseButtonDown){
+                this.centre.x -= deltaX / this.scale;
+                this.centre.y -= deltaY / this.scale;
+            }
+            this.mouseLastPos = newPos;
+            this.dirty = true;
+        }
+
+        onImageLoad() {
+            // centre at image centre
+            this.centre.x = this.image.width / 2;
+            this.centre.y = this.image.height / 2;
+
+            // this.imgFitWidth();
+            // this.imgFitHeight();
+            // this.imgFitWindow();
+
+            // this.imgCenteringBoth();
+            // this.imgCenteringX();
+            // this.imgCenteringY();
+
+            // image changed
+            this.dirty = true;
+
+            // start new render loop
+            this.renderImage();
         }
 
         renderImage() {
@@ -96,23 +130,21 @@
             if (this.dirty) {
                 this.dirty = false;
 
-                // this.imgFitWidth();
-                // this.imgFitHeight();
-                // this.imgFitWindow();
-
                 // clear canvas
                 this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
                 // draw image (transformed and scaled)
                 this.context.save();
 
-                // this.imgCenteringBoth();
-                // this.imgCenteringX();
-                // this.imgCenteringY();
-
                 this.context.scale(this.scale, this.scale);
 
-                this.context.drawImage(this.image, 0, 0, this.image.width, this.image.height);
+                this.context.drawImage(
+                    this.image, // image object
+                    this.centre.x - this.image.width / 2 * this.scale, // x pos
+                    this.centre.y - this.image.height / 2 * this.scale, // y pos
+                    this.image.width, // draw width
+                    this.image.height // draw height
+                );
 
                 this.context.restore();
             }
@@ -133,6 +165,10 @@
             this.dirty = true;
         }
 
+        imgFitReset() {
+            this.scale = 1;
+        }
+
         imgFitWindow() {
             // set scale to use as much space inside the canvas as possible
             if (((this.canvas.height / this.image.height) * this.image.width) <= this.canvas.width) {
@@ -151,18 +187,16 @@
         }
 
         imgCenteringBoth() {
-            let translateX = this.canvas.width / 2 - this.centre.x * this.scale;
-            let translateY = this.canvas.height / 2 - this.centre.y * this.scale;
-
-            this.context.translate(translateX, translateY);
+            this.centre.x = this.canvas.width / 2;
+            this.centre.y = this.canvas.height / 2;
         }
 
         imgCenteringX() {
-            this.context.translate(this.canvas.width / 2 - this.centre.x * this.scale, 0);
+            this.centre.x = this.canvas.width / 2;
         }
 
         imgCenteringY() {
-            this.context.translate(0, this.canvas.height / 2 - this.centre.y * this.scale);
+            this.centre.y = this.canvas.height / 2;
         }
 
         mounted() {
@@ -180,6 +214,8 @@
                 this.image.addEventListener('load', this.onImageLoad, false);
                 this.image.src = this.$store.state.Root.image;
 
+                this.canvas.addEventListener('mousedown', this.onMouseDown);
+                this.canvas.addEventListener('mouseup', this.onMouseUp);
                 this.canvas.addEventListener('mousewheel', this.onMouseWheel);
                 this.canvas.addEventListener('mousemove', this.onMouseMove);
             });
@@ -189,6 +225,8 @@
             this.keypress.reset();
 
             window.removeEventListener('resize', this.onResize);
+            this.canvas.removeEventListener('mousedown', this.onMouseDown);
+            this.canvas.removeEventListener('mouseup', this.onMouseUp);
             this.canvas.removeEventListener('mousewheel', this.onMouseWheel);
             this.canvas.removeEventListener('mousemove', this.onMouseMove);
         }
