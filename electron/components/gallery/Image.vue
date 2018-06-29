@@ -1,6 +1,6 @@
 <template>
     <div class="img-viewer">
-        <canvas id="img-canvas" :style="{width: canvasWidth + 'px', height: canvasHeight + 'px'}"></canvas>
+        <canvas id="img-canvas" :width="canvasWidth + 'px'" :height="canvasHeight + 'px'"></canvas>
     </div>
 </template>
 
@@ -35,6 +35,7 @@
         private dirty: boolean = false;
         private centre: Point = {x: 0, y: 0} as Point;
         private scale: number = 1;
+        private scaleStep: number = 0.1;
         private stopRendering: boolean = false;
 
         constructor() {
@@ -52,11 +53,13 @@
 
         onImageLoad() {
             // set scale to use as much space inside the canvas as possible
-            if (((this.canvas.height / this.image.height) * this.image.width) <= this.canvas.width) {
-                this.scale = this.canvas.height / this.image.height;
-            } else {
-                this.scale = this.canvas.width / this.image.width;
-            }
+            // if (((this.canvas.height / this.image.height) * this.image.width) <= this.canvas.width) {
+            //     this.scale = this.canvas.height / this.image.height;
+            // } else {
+            //     this.scale = this.canvas.width / this.image.width;
+            // }
+
+            this.scale = 1;
 
             // centre at image centre
             this.centre.x = this.image.width / 2;
@@ -67,6 +70,34 @@
 
             // start new render loop
             this.renderImage();
+        }
+
+        zoomIn() {
+            this.scale = this.scale * (1 + this.scaleStep);
+            this.dirty = true;
+        };
+
+        zoomOut() {
+            this.scale = this.scale * (1 - this.scaleStep);
+            this.dirty = true;
+        };
+
+        onMouseWheel(evt: Event | undefined) {
+            if (!evt) {
+                evt = event;
+            }
+
+            (evt as Event).preventDefault();
+
+            if ((evt as WheelEvent).detail < 0 || (evt as WheelEvent).wheelDelta > 0) { // up -> smaller
+                this.zoomOut();
+            } else { // down -> larger
+                this.zoomIn();
+            }
+        }
+
+        onMouseMove() {
+
         }
 
         renderImage() {
@@ -80,13 +111,13 @@
                 // draw image (transformed and scaled)
                 this.context.save();
 
-                let translateX = this.canvas.width / 2 - this.centre.x * this.scale;
-                let translateY = this.canvas.height / 2 - this.centre.y * this.scale;
-
-                this.context.translate(translateX, translateY);
+                // let translateX = this.canvas.width / 2 - this.centre.x * this.scale;
+                // let translateY = this.canvas.height / 2 - this.centre.y * this.scale;
+                //
+                // this.context.translate(translateX, translateY);
                 this.context.scale(this.scale, this.scale);
 
-                this.context.drawImage(this.image, 0, 0);
+                this.context.drawImage(this.image, 0, 0, this.image.width, this.image.height);
 
                 this.context.restore();
 
@@ -102,11 +133,17 @@
             this.canvasHeight = document.documentElement.clientHeight;
         }
 
+        onResize() {
+            this.setDimension();
+
+            this.dirty = true;
+        }
+
         mounted() {
             this.keypress.register_many(this.keypressCombos);
 
             this.$nextTick(() => {
-                window.addEventListener('resize', this.setDimension);
+                window.addEventListener('resize', this.onResize);
 
                 this.setDimension(); // init
 
@@ -116,13 +153,18 @@
                 this.image = new Image();
                 this.image.addEventListener('load', this.onImageLoad, false);
                 this.image.src = this.$store.state.Root.image;
+
+                this.canvas.addEventListener('mousewheel', this.onMouseWheel);
+                this.canvas.addEventListener('mousemove', this.onMouseMove);
             });
         }
 
         beforeDestroy() {
             this.keypress.reset();
 
-            window.removeEventListener('resize', this.setDimension);
+            window.removeEventListener('resize', this.onResize);
+            this.canvas.removeEventListener('mousewheel', this.onMouseWheel);
+            this.canvas.removeEventListener('mousemove', this.onMouseMove);
         }
 
     }
