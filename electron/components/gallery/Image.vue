@@ -94,12 +94,12 @@
 
             this.mouseLastPos = this.mouseLastPos || {x: 0, y: 0} as Point;
 
-            let deltaX = -(newPos.x - this.mouseLastPos.x);
-            let deltaY = -(newPos.y - this.mouseLastPos.y);
+            let deltaX = newPos.x - this.mouseLastPos.x;
+            let deltaY = newPos.y - this.mouseLastPos.y;
 
             if (this.leftMouseButtonDown){
-                this.centre.x -= deltaX;
-                this.centre.y -= deltaY;
+                this.centre.x += deltaX;
+                this.centre.y += deltaY;
             }
             this.mouseLastPos = newPos;
             this.dirty = true;
