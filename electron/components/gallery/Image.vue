@@ -255,6 +255,14 @@
                     } as Konva.Vector2d;
                 },
             });
+            this.konvaImage.on('mouseenter', () => {
+                this.konvaStage.container().style.cursor = 'move';
+            });
+
+            this.konvaImage.on('mouseleave', () => {
+                this.konvaStage.container().style.cursor = 'default';
+            });
+
             this.konvaLayer.add(this.konvaImage);
             this.konvaStage.draw();
         }
