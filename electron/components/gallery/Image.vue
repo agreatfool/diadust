@@ -14,6 +14,11 @@
     import {Combo, Listener as KeypressListener} from 'keypress.js';
     import * as Konva from 'konva';
 
+    interface MultiKeyCombo {
+        keys: Array<string>;
+        event: (event?: KeyboardEvent) => any;
+    }
+
     @Component
     export default class ImageViewer extends Vue {
 
@@ -21,18 +26,11 @@
         private canvasHeight: number = 0;
 
         private keypress: KeypressListener;
-        private keypressCombos: Array<Combo>;
+        private keypressCombos: Array<MultiKeyCombo>;
 
-        private canvas: HTMLCanvasElement;
-        private context: CanvasRenderingContext2D;
         private image: any; // shall be "Image", but IDE say "Cannot find name Image"
-        private dirty: boolean = false;
-        private centre: Konva.Vector2d = {x: 0, y: 0} as Konva.Vector2d;
         private scale: number = 1;
         private scaleStep: number = 0.1;
-        // private mouseLastPos: Point = {x: 0, y: 0} as Point;
-        private leftMouseButtonDown: boolean = false;
-        private stopRendering: boolean = false;
 
         private konvaStage: Konva.Stage;
         private konvaLayer: Konva.Layer;
@@ -40,6 +38,111 @@
 
         constructor() {
             super();
+
+            this.keypress = new KeypressListener();
+            this.keypressCombos = [
+                {
+                    keys: ['esc'], // reset image, leave image viewer mode
+                    event: () => {
+                        this.$store.commit('rootImageSet', ''); // reset image
+                    }
+                } as MultiKeyCombo,
+                {
+                    keys: ['cmd 1', 'ctrl 1'], // reset scale
+                    event: () => {
+                        this.zoomReset();
+                    }
+                } as MultiKeyCombo,
+                {
+                    keys: ['cmd 2', 'ctrl 2'], // fit window
+                    event: () => {
+                        this.imgFitWindow();
+                    }
+                } as MultiKeyCombo,
+                {
+                    keys: ['cmd 3', 'ctrl 3'], // fit width
+                    event: () => {
+                        this.imgFitWidth();
+                    }
+                } as MultiKeyCombo,
+                {
+                    keys: ['cmd 4', 'ctrl 4'], // fit height
+                    event: () => {
+                        this.imgFitHeight();
+                    }
+                } as MultiKeyCombo,
+                {
+                    keys: ['cmd 5', 'ctrl 5'], // center window
+                    event: () => {
+                        this.imgCenteringBoth();
+                    }
+                } as MultiKeyCombo,
+                {
+                    keys: ['cmd 6', 'ctrl 6'], // center x
+                    event: () => {
+                        this.imgCenteringX();
+                    }
+                } as MultiKeyCombo,
+                {
+                    keys: ['cmd 7', 'ctrl 7'], // center y
+                    event: () => {
+                        this.imgCenteringY();
+                    }
+                } as MultiKeyCombo,
+            ];
+        }
+
+        imgFitWindow() {
+            // set scale to use as much space inside the canvas as possible
+            if (((this.konvaStage.height() / this.image.height) * this.image.width) <= this.konvaStage.width()) {
+                this.imgFitHeight();
+            } else {
+                this.imgFitWidth();
+            }
+        }
+
+        imgFitWidth() {
+            this.scale = this.konvaStage.width() / this.image.width;
+            this.konvaImage.position({
+                x: this.konvaStage.width() / 2,
+                y: this.image.height / 2  * this.scale
+            });
+            this.konvaImage.scale({x: this.scale, y: this.scale});
+            this.konvaStage.draw();
+        }
+
+        imgFitHeight() {
+            this.scale = this.konvaStage.height() / this.image.height;
+            this.konvaImage.position({
+                x: this.image.width / 2  * this.scale,
+                y: this.konvaStage.height() / 2
+            });
+            this.konvaImage.scale({x: this.scale, y: this.scale});
+            this.konvaStage.draw();
+        }
+
+        imgCenteringBoth() {
+            this.konvaImage.position({
+                x: this.konvaStage.width() / 2,
+                y: this.konvaStage.height() / 2
+            });
+            this.konvaStage.draw();
+        }
+
+        imgCenteringX() {
+            this.konvaImage.position({
+                x: this.konvaStage.width() / 2,
+                y: this.image.height / 2  * this.scale
+            });
+            this.konvaStage.draw();
+        }
+
+        imgCenteringY() {
+            this.konvaImage.position({
+                x: this.image.width / 2  * this.scale,
+                y: this.konvaStage.height() / 2
+            });
+            this.konvaStage.draw();
         }
 
         zoomReset() {
@@ -183,31 +286,14 @@
                 this.image.addEventListener('load', this.onImageLoad, false);
                 this.image.src = this.$store.state.Root.image;
 
-                this.keypress = new KeypressListener();
-                this.keypressCombos = [
-                    {
-                        // reset image, leave image viewer mode
-                        keys: 'esc',
-                        on_keyup: () => {
-                            this.$store.commit('rootImageSet', ''); // reset image
-                        }
-                    } as Combo,
-                    {
-                        // reset scale: command + 1
-                        keys: 'cmd 1',
-                        on_keyup: () => {
-                            this.zoomReset();
-                        }
-                    } as Combo,
-                    {
-                        // reset scale: control + 1
-                        keys: 'ctrl 1',
-                        on_keyup: () => {
-                            this.zoomReset();
-                        }
-                    } as Combo,
-                ];
-                this.keypress.register_many(this.keypressCombos);
+                this.keypressCombos.forEach((combo: MultiKeyCombo) => {
+                    combo.keys.forEach((key: string) => {
+                        this.keypress.register_combo({
+                            keys: key,
+                            on_keyup: combo.event,
+                        } as Combo);
+                    });
+                });
 
                 window.addEventListener('resize', this.setDimension);
                 window.addEventListener('mousewheel', this.onMouseWheel);
