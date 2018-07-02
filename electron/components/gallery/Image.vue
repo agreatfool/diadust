@@ -1,7 +1,5 @@
 <template>
-    <div class="img-viewer">
-        <canvas id="img-canvas" :width="canvasWidth + 'px'" :height="canvasHeight + 'px'"></canvas>
-    </div>
+    <div id="img-container" class="img-viewer"></div>
 </template>
 
 <style>
@@ -14,11 +12,7 @@
 <script lang="ts">
     import {Component, Vue} from "vue-property-decorator";
     import {Combo, Listener as KeypressListener} from 'keypress.js';
-
-    interface Point {
-        x: number;
-        y: number;
-    }
+    import * as Konva from 'konva';
 
     @Component
     export default class ImageViewer extends Vue {
@@ -33,43 +27,38 @@
         private context: CanvasRenderingContext2D;
         private image: any; // shall be "Image", but IDE say "Cannot find name Image"
         private dirty: boolean = false;
-        private centre: Point = {x: 0, y: 0} as Point;
+        private centre: Konva.Vector2d = {x: 0, y: 0} as Konva.Vector2d;
         private scale: number = 1;
         private scaleStep: number = 0.1;
-        private mouseLastPos: Point = {x: 0, y: 0} as Point;
+        // private mouseLastPos: Point = {x: 0, y: 0} as Point;
         private leftMouseButtonDown: boolean = false;
         private stopRendering: boolean = false;
 
+        private konvaStage: Konva.Stage;
+        private konvaLayer: Konva.Layer;
+        private konvaImage: Konva.Image;
+
         constructor() {
             super();
-            this.keypress = new KeypressListener();
-            this.keypressCombos = [
-                {
-                    keys: 'esc',
-                    on_keyup: () => {
-                        this.$store.commit('rootImageSet', ''); // reset image
-                    }
-                } as Combo,
-            ];
+        }
+
+        zoomReset() {
+            this.scale = 1;
+            this.konvaImage.scale({x: this.scale, y: this.scale});
+            this.konvaStage.draw();
         }
 
         zoomIn() {
             this.scale = this.scale * (1 + this.scaleStep);
-            this.dirty = true;
+            this.konvaImage.scale({x: this.scale, y: this.scale});
+            this.konvaStage.draw();
         };
 
         zoomOut() {
             this.scale = this.scale * (1 - this.scaleStep);
-            this.dirty = true;
+            this.konvaImage.scale({x: this.scale, y: this.scale});
+            this.konvaStage.draw();
         };
-
-        onMouseDown(evt: MouseEvent){
-            this.leftMouseButtonDown = true;
-        }
-
-        onMouseUp(evt: MouseEvent){
-            this.leftMouseButtonDown = false;
-        }
 
         onMouseWheel(evt: Event | undefined) {
             if (!evt) {
@@ -85,148 +74,151 @@
             }
         }
 
-        onMouseMove(evt: MouseEvent) {
-            let rect = this.canvas.getBoundingClientRect();
-            let newPos = {
-                x: (evt as MouseEvent).clientX - rect.left,
-                y: (evt as MouseEvent).clientY - rect.top
-            } as Point;
-
-            this.mouseLastPos = this.mouseLastPos || {x: 0, y: 0} as Point;
-
-            let deltaX = newPos.x - this.mouseLastPos.x;
-            let deltaY = newPos.y - this.mouseLastPos.y;
-
-            if (this.leftMouseButtonDown){
-                this.centre.x += deltaX;
-                this.centre.y += deltaY;
-            }
-            this.mouseLastPos = newPos;
-            this.dirty = true;
-        }
-
         onImageLoad() {
-            // centre at image centre
-            this.centre.x = this.image.width / 2;
-            this.centre.y = this.image.height / 2;
+            this.konvaImage = new Konva.Image({
+                image: this.image,
+                width: this.image.width * this.scale,
+                height: this.image.height * this.scale,
+                // set draw point to image center
+                offset: {
+                    x: this.image.width / 2 * this.scale,
+                    y: this.image.height / 2 * this.scale,
+                },
+                // set init position to draw point
+                position: {
+                    x: this.image.width / 2 * this.scale,
+                    y: this.image.height / 2 * this.scale,
+                },
+                draggable: true,
+                dragBoundFunc: (pos: Konva.Vector2d) => {
+                    // use top left point to calc bound
+                    let leftTopPos = {
+                        x: pos.x - this.image.width / 2 * this.scale,
+                        y: pos.y - this.image.height / 2 * this.scale,
+                    } as Konva.Vector2d;
 
-            // this.imgFitWidth();
-            // this.imgFitHeight();
-            // this.imgFitWindow();
+                    let deltaX = this.canvasWidth - this.image.width * this.scale;
+                    let deltaY = this.canvasHeight - this.image.height * this.scale;
 
-            // this.imgCenteringBoth();
-            // this.imgCenteringX();
-            // this.imgCenteringY();
+                    // this is top left dest point
+                    let destX = 0;
+                    let destY = 0;
 
-            // image changed
-            this.dirty = true;
+                    // x
+                    if (deltaX < 0) {
+                        // image width bigger than canvas width
+                        if (leftTopPos.x > 0) {
+                            destX = 0;
+                        } else if (leftTopPos.x < deltaX) {
+                            destX = deltaX;
+                        } else {
+                            destX = leftTopPos.x;
+                        }
+                    } else if (deltaX > 0) {
+                        // image width smaller than canvas width
+                        if (leftTopPos.x > deltaX) {
+                            destX = deltaX;
+                        } else if (leftTopPos.x < 0) {
+                            destX = 0;
+                        } else {
+                            destX = leftTopPos.x;
+                        }
+                    }
 
-            // start new render loop
-            this.renderImage();
-        }
+                    // y
+                    if (deltaY < 0) {
+                        // image height bigger than canvas height
+                        if (leftTopPos.y > 0) {
+                            destY = 0;
+                        } else if (leftTopPos.y < deltaY) {
+                            destY = deltaY;
+                        } else {
+                            destY = leftTopPos.y;
+                        }
+                    } else if (deltaY > 0) {
+                        // image height smaller than canvas height
+                        if (leftTopPos.y > deltaY) {
+                            destY = deltaY;
+                        } else if (leftTopPos.y < 0) {
+                            destY = 0;
+                        } else {
+                            destY = leftTopPos.y;
+                        }
+                    }
 
-        renderImage() {
-            // only re-render if dirty
-            if (this.dirty) {
-                this.dirty = false;
-
-                // clear canvas
-                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-                // draw image (transformed and scaled)
-                this.context.save();
-
-                this.context.drawImage(
-                    this.image, // image object
-                    this.centre.x - this.image.width / 2 * this.scale, // x pos
-                    this.centre.y - this.image.height / 2 * this.scale, // y pos
-                    this.image.width * this.scale, // draw width
-                    this.image.height * this.scale // draw height
-                );
-
-                this.context.restore();
-            }
-
-            if (!this.stopRendering) {
-                window.requestAnimationFrame(this.renderImage);
-            }
+                    return {
+                        x: destX + this.image.width / 2 * this.scale,
+                        y: destY + this.image.height / 2 * this.scale,
+                    } as Konva.Vector2d;
+                },
+            });
+            this.konvaLayer.add(this.konvaImage);
+            this.konvaStage.draw();
         }
 
         setDimension() {
             this.canvasWidth = document.documentElement.clientWidth;
             this.canvasHeight = document.documentElement.clientHeight;
-        }
 
-        onResize() {
-            this.setDimension();
-
-            this.dirty = true;
-        }
-
-        imgFitReset() {
-            this.scale = 1;
-        }
-
-        imgFitWindow() {
-            // set scale to use as much space inside the canvas as possible
-            if (((this.canvas.height / this.image.height) * this.image.width) <= this.canvas.width) {
-                this.scale = this.canvas.height / this.image.height;
-            } else {
-                this.scale = this.canvas.width / this.image.width;
+            if (this.konvaStage) {
+                this.konvaStage.setWidth(this.canvasWidth);
+                this.konvaStage.setHeight(this.canvasHeight);
+                this.konvaStage.draw();
             }
         }
 
-        imgFitWidth() {
-            this.scale = this.canvas.width / this.image.width;
-        }
-
-        imgFitHeight() {
-            this.scale = this.canvas.height / this.image.height;
-        }
-
-        imgCenteringBoth() {
-            this.centre.x = this.canvas.width / 2;
-            this.centre.y = this.canvas.height / 2;
-        }
-
-        imgCenteringX() {
-            this.centre.x = this.canvas.width / 2;
-        }
-
-        imgCenteringY() {
-            this.centre.y = this.canvas.height / 2;
-        }
-
         mounted() {
-            this.keypress.register_many(this.keypressCombos);
-
             this.$nextTick(() => {
-                window.addEventListener('resize', this.onResize);
-
                 this.setDimension(); // init
 
-                this.canvas = document.getElementById('img-canvas') as HTMLCanvasElement;
-                this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D;
+                this.konvaStage = new Konva.Stage({
+                    container: 'img-container',
+                    width: this.canvasWidth,
+                    height: this.canvasHeight,
+                });
+                this.konvaLayer = new Konva.Layer();
+                this.konvaStage.add(this.konvaLayer);
 
                 this.image = new Image();
                 this.image.addEventListener('load', this.onImageLoad, false);
                 this.image.src = this.$store.state.Root.image;
 
-                this.canvas.addEventListener('mousedown', this.onMouseDown);
-                this.canvas.addEventListener('mouseup', this.onMouseUp);
-                this.canvas.addEventListener('mousewheel', this.onMouseWheel);
-                this.canvas.addEventListener('mousemove', this.onMouseMove);
+                this.keypress = new KeypressListener();
+                this.keypressCombos = [
+                    {
+                        // reset image, leave image viewer mode
+                        keys: 'esc',
+                        on_keyup: () => {
+                            this.$store.commit('rootImageSet', ''); // reset image
+                        }
+                    } as Combo,
+                    {
+                        // reset scale: command + 1
+                        keys: 'cmd 1',
+                        on_keyup: () => {
+                            this.zoomReset();
+                        }
+                    } as Combo,
+                    {
+                        // reset scale: control + 1
+                        keys: 'ctrl 1',
+                        on_keyup: () => {
+                            this.zoomReset();
+                        }
+                    } as Combo,
+                ];
+                this.keypress.register_many(this.keypressCombos);
+
+                window.addEventListener('resize', this.setDimension);
+                window.addEventListener('mousewheel', this.onMouseWheel);
             });
         }
 
         beforeDestroy() {
             this.keypress.reset();
 
-            window.removeEventListener('resize', this.onResize);
-            this.canvas.removeEventListener('mousedown', this.onMouseDown);
-            this.canvas.removeEventListener('mouseup', this.onMouseUp);
-            this.canvas.removeEventListener('mousewheel', this.onMouseWheel);
-            this.canvas.removeEventListener('mousemove', this.onMouseMove);
+            window.removeEventListener('resize', this.setDimension);
+            window.removeEventListener('mousewheel', this.onMouseWheel);
         }
 
     }
