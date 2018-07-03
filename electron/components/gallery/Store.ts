@@ -4,6 +4,8 @@ import {GalleryImage, ImageSearchFilter, /*LocalImage*/} from '../../model/Image
 import {post} from "../../lib/Http";
 import {LocalFile} from "../../model/Drop";
 
+import * as uuidV4 from 'uuid/v4';
+
 // State
 export const GALLERY_DEFAULT    = 'gallery';
 export const GALLERY_TYPE_FILES = 'files';
@@ -110,4 +112,18 @@ export const Store: Module<State, {}> = {
     actions: {
         // fetchImages
     }
+};
+
+// Utility
+
+export const createNewGallery = function (type: string, name: string, files: Array<GalleryImage | LocalFile>) {
+    return {
+        id: uuidV4(),
+        type: type,
+        name: name,
+        files: files,
+        lastPageNum: 0,
+        pageNum: 0,
+        imageNum: 0,
+    } as Gallery;
 };

@@ -1,13 +1,17 @@
 import * as LibFs from 'fs';
 import * as LibPath from 'path';
-
-import * as uuidV4 from 'uuid/v4';
 import * as readChunk from 'read-chunk';
 import * as fileType from 'file-type';
 
 import {readDirSortedSync} from './File';
 import {LocalFile, ValidArchiveType, ValidDropType, ValidImageType} from "../model/Drop";
-import {Gallery, GALLERY_TYPE_ARCH, GALLERY_TYPE_DIR, GALLERY_TYPE_FILES} from "../components/gallery/Store";
+import {
+    createNewGallery,
+    Gallery,
+    GALLERY_TYPE_ARCH,
+    GALLERY_TYPE_DIR,
+    GALLERY_TYPE_FILES
+} from "../components/gallery/Store";
 
 export type DropFiles = { [key: string]: Array<LocalFile> };
 
@@ -141,14 +145,7 @@ export const dropFilesToGalleryType = function (dirs: DropFiles): Array<Gallery>
             }
         }
 
-        galleries.push({
-            id: uuidV4(),
-            type: type,
-            name: type === GALLERY_TYPE_DIR ? key : files[0].path,
-            files: files,
-            lastPageNum: 0,
-            pageNum: 0,
-        } as Gallery);
+        galleries.push(createNewGallery(type, type === GALLERY_TYPE_DIR ? key : files[0].path, files));
     }
 
     return galleries;
