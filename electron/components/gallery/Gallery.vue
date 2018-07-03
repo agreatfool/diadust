@@ -132,11 +132,11 @@
                 // only loaded data once on page initialized, shall not sync lastPageNum,
                 // since next page load shall also be treated as new page init,
                 // also do't forget reset current page number
-                this.$store.commit('galleryViewerPageNumReset', this.id); // reset
+                this.$store.commit('galleryPageNumReset', this.id); // reset
                 return;
             }
 
-            this.$store.commit('galleryViewerPageNumSync', this.id); // sync page num when leave
+            this.$store.commit('galleryPageNumSync', this.id); // sync page num when leave
         }
 
         async fetchGallery() {
@@ -204,7 +204,7 @@
             }
 
             if (!this.isOutofData && initialized) { // only add page number if data loading is doing after page mounted, means not initializing status
-                this.$store.commit('galleryViewerPageNumPlus', this.id);
+                this.$store.commit('galleryPageNumPlus', this.id);
             }
 
             this.isLoading = false;
