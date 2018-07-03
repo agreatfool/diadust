@@ -153,11 +153,6 @@
 
                 this.setDynamicMainHeight(); // init
             });
-
-            // FIXME dummy test code, remove later
-            setTimeout(() => {
-                this.$store.commit('rootImageSet', 'file:///Users/Jonathan/Downloads/test/output1%E7%9A%84%E5%89%AF%E6%9C%AC%2012.webp');
-            }, 1000);
         }
 
         beforeDestroy() {
