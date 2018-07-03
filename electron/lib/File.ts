@@ -18,3 +18,7 @@ export const readDirSortedSync = function (path: string, options?: ReadDirSorted
 
     return LibFs.readdirSync(path).sort(sort);
 };
+
+export const convertSrcFilePathToLocalFilePath = function (src: string) {
+    return decodeURIComponent(src).replace('file://', '');
+};

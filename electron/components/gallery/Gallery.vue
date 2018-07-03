@@ -72,9 +72,10 @@
     import MugenScroll from 'vue-mugen-scroll';
 
     import {VueMasonryPlugin} from '../plugin/Masonry';
-    import {Gallery as GalleryState} from './Store';
+    import {Gallery as GalleryState, ViewingImageQuery} from './Store';
     import {LocalFile} from '../../model/Drop';
     import {GalleryImage} from '../../model/Image';
+    import {convertSrcFilePathToLocalFilePath} from '../../lib/File';
 
     Vue.use(VueMasonryPlugin);
 
@@ -224,7 +225,10 @@
             // TODO 查看图片
             const filePath = (event.srcElement as any).src;
             if (filePath) {
-                this.$store.commit('rootImageSet', filePath);
+                this.$store.commit('gallerySetViewingImage', {
+                    filePath: convertSrcFilePathToLocalFilePath(filePath),
+                    galleryId: this.id
+                } as ViewingImageQuery);
             }
         }
 

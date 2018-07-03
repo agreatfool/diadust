@@ -18,25 +18,19 @@ Vue.use(Vuex);
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 // Root store mutations & actions
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
-const rootImageSet: Mutation<State> = function (state: State, filePath: string) {
-    state.image = filePath;
-};
 
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 // Root store
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 export interface State {
     // histories: Array<ActionHistory>;
-    image: string; // path to local image file
 }
 
 export const Store: Module<State, {}> = {
     state: {
         // histories: [],
-        image: '',
     },
     mutations: {
-        rootImageSet,
     },
     actions: {}
 };

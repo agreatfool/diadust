@@ -1,6 +1,6 @@
 <template>
     <div class="main">
-        <el-container v-show="$store.state.Root.image === ''">
+        <el-container v-show="$store.state.Gallery.viewingImagePath === ''">
             <el-header>
                 <div v-on:dragover.prevent
                      v-on:drop="drop">
@@ -50,7 +50,7 @@
             </el-main>
             <el-footer></el-footer>
         </el-container>
-        <image-viewer v-if="$store.state.Root.image !== ''"></image-viewer>
+        <image-viewer v-if="$store.state.Gallery.viewingImagePath !== ''"></image-viewer>
     </div>
 </template>
 

@@ -13,6 +13,7 @@
     import {Component, Vue} from "vue-property-decorator";
     import {Combo, Listener as KeypressListener} from 'keypress.js';
     import * as Konva from 'konva';
+    import {ViewingImageQuery} from "./Store";
 
     interface MultiKeyCombo {
         keys: Array<string>;
@@ -36,6 +37,8 @@
         private konvaLayer: Konva.Layer;
         private konvaImage: Konva.Image;
 
+        private vueWatcher: () => void;
+
         constructor() {
             super();
 
@@ -44,7 +47,10 @@
                 {
                     keys: ['esc'], // reset image, leave image viewer mode
                     event: () => {
-                        this.$store.commit('rootImageSet', ''); // reset image
+                        this.$store.commit('gallerySetViewingImage', {
+                            filePath: '',
+                            galleryId: '',
+                        } as ViewingImageQuery); // reset image
                     }
                 } as MultiKeyCombo,
                 {
@@ -89,6 +95,18 @@
                         this.imgCenteringY();
                     }
                 } as MultiKeyCombo,
+                {
+                    keys: ['pageup'], // previous image
+                    event: () => {
+                        this.$store.commit('galleryPrevImage');
+                    }
+                } as MultiKeyCombo,
+                {
+                    keys: ['pagedown'], // next image
+                    event: () => {
+                        this.$store.commit('galleryNextImage');
+                    }
+                } as MultiKeyCombo,
             ];
         }
 
@@ -105,7 +123,7 @@
             this.scale = this.konvaStage.width() / this.image.width;
             this.konvaImage.position({
                 x: this.konvaStage.width() / 2,
-                y: this.image.height / 2  * this.scale
+                y: this.image.height / 2 * this.scale
             });
             this.konvaImage.scale({x: this.scale, y: this.scale});
             this.konvaStage.draw();
@@ -114,7 +132,7 @@
         imgFitHeight() {
             this.scale = this.konvaStage.height() / this.image.height;
             this.konvaImage.position({
-                x: this.image.width / 2  * this.scale,
+                x: this.image.width / 2 * this.scale,
                 y: this.konvaStage.height() / 2
             });
             this.konvaImage.scale({x: this.scale, y: this.scale});
@@ -132,14 +150,14 @@
         imgCenteringX() {
             this.konvaImage.position({
                 x: this.konvaStage.width() / 2,
-                y: this.image.height / 2  * this.scale
+                y: this.image.height / 2 * this.scale
             });
             this.konvaStage.draw();
         }
 
         imgCenteringY() {
             this.konvaImage.position({
-                x: this.image.width / 2  * this.scale,
+                x: this.image.width / 2 * this.scale,
                 y: this.konvaStage.height() / 2
             });
             this.konvaStage.draw();
@@ -279,6 +297,11 @@
         }
 
         mounted() {
+            this.vueWatcher = this.$store.watch(() => this.$store.state.Gallery.viewingImagePath,
+                () => {
+                    this.image.src = this.$store.state.Gallery.viewingImagePath;
+                });
+
             this.$nextTick(() => {
                 this.setDimension(); // init
 
@@ -292,7 +315,7 @@
 
                 this.image = new Image();
                 this.image.addEventListener('load', this.onImageLoad, false);
-                this.image.src = this.$store.state.Root.image;
+                this.image.src = this.$store.state.Gallery.viewingImagePath;
 
                 this.keypressCombos.forEach((combo: MultiKeyCombo) => {
                     combo.keys.forEach((key: string) => {
@@ -309,8 +332,8 @@
         }
 
         beforeDestroy() {
+            this.vueWatcher();
             this.keypress.reset();
-
             window.removeEventListener('resize', this.setDimension);
             window.removeEventListener('mousewheel', this.onMouseWheel);
         }
