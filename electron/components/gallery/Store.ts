@@ -57,6 +57,10 @@ const galleryPageNumPlus: Mutation<State> = function (state: State, galleryId: s
         gallery = viewer;
     }
 
+    if (!gallery) {
+        return;
+    }
+
     gallery.pageNum++;
 };
 
@@ -70,6 +74,10 @@ const galleryPageNumReset: Mutation<State> = function (state: State, galleryId: 
         gallery = viewer;
     }
 
+    if (!gallery) {
+        return;
+    }
+
     gallery.pageNum = 0;
 };
 
@@ -81,6 +89,10 @@ const galleryPageNumSync: Mutation<State> = function (state: State, galleryId: s
     } else {
         let {viewer} = getTargetViewerData(state, galleryId);
         gallery = viewer;
+    }
+
+    if (!gallery) {
+        return;
     }
 
     gallery.lastPageNum = gallery.pageNum;
@@ -102,6 +114,10 @@ const gallerySetViewingImage: Mutation<State> = function (state: State, query: V
     } else {
         let {viewer} = getTargetViewerData(state, query.galleryId);
         gallery = viewer;
+    }
+
+    if (!gallery) {
+        return;
     }
 
     if (query.filePath === '') {
@@ -132,6 +148,10 @@ const galleryNextImage: Mutation<State> = function (state: State) {
         gallery = viewer;
     }
 
+    if (!gallery) {
+        return;
+    }
+
     gallery.imageNum < gallery.files.length - 1 ? gallery.imageNum++ : '';
     state.viewingImagePath = gallery.files[gallery.imageNum].path;
 };
@@ -144,6 +164,10 @@ const galleryPrevImage: Mutation<State> = function (state: State) {
     } else {
         let {viewer} = getTargetViewerData(state, state.viewingGalleryId);
         gallery = viewer;
+    }
+
+    if (!gallery) {
+        return;
     }
 
     gallery.imageNum > 0 ? gallery.imageNum-- : '';
