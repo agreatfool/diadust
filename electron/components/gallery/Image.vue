@@ -14,6 +14,7 @@
     import {Combo, Listener as KeypressListener} from 'keypress.js';
     import * as Konva from 'konva';
     import {ViewingImageQuery} from "./Store";
+    import {clipboard, nativeImage} from 'electron';
 
     interface MultiKeyCombo {
         keys: Array<string>;
@@ -105,6 +106,14 @@
                     keys: ['pagedown'], // next image
                     event: () => {
                         this.$store.commit('galleryNextImage');
+                    }
+                } as MultiKeyCombo,
+                {
+                    keys: ['cmd c', 'ctrl c'], // copy image
+                    event: () => {
+                        clipboard.writeImage(
+                            nativeImage.createFromPath(this.$store.state.Gallery.viewingImagePath)
+                        );
                     }
                 } as MultiKeyCombo,
             ];
