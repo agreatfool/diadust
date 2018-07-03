@@ -14,8 +14,8 @@ export const GALLERY_TYPE_ARCH  = 'archive';
 
 export interface Gallery {
     id: string; // gallery id (uuid), default is 'gallery', means Gallery page, otherwise are Viewer tab pages
-    type: string; // default is 'gallery', 'files' | 'directory' | 'archive'
-    name: string; // default is 'gallery', files: first file path, dir: dir path, archive: archive file path
+    type: string; // possible value: 'gallery' | 'files' | 'directory' | 'archive'
+    name: string; // possible value: 'gallery' | files: first file path | dir: dir path | archive: archive file path
     files: Array<GalleryImage | LocalFile>;
     lastPageNum: number; // last pagination id number, used to recover page status rendering
     pageNum: number; // current page number, used to fetch data
@@ -24,8 +24,8 @@ export interface Gallery {
 
 export interface State {
     gallery: Gallery, // Gallery page
-    viewers: Array<Gallery>; // Viewer page, tabs
-    activeViewerTab: string; // Viewer page, activated tab id (gallery id)
+    viewers: Array<Gallery>; // Viewer page: tabs
+    activeViewerTab: string; // Viewer page: activated tab id (gallery id)
 }
 
 // Mutations
@@ -35,57 +35,54 @@ const galleryViewerTabAdd: Mutation<State> = function (state: State, gallery: Ga
 };
 
 const galleryViewerTabRemove: Mutation<State> = function (state: State, galleryId: string) {
-    let foundIndex = -1;
-    state.viewers.forEach((gallery: Gallery, index: number) => {
-        if (gallery.id === galleryId) {
-            foundIndex = index;
-        }
-    });
+    let {index} = getTargetViewerData(state, galleryId);
 
-    if (foundIndex !== -1) {
-        let nextTab = state.viewers[foundIndex + 1] || state.viewers[foundIndex - 1];
-        state.viewers.splice(foundIndex, 1);
+    if (index !== -1) {
+        let nextTab = state.viewers[index + 1] || state.viewers[index - 1];
+        state.viewers.splice(index, 1);
         state.activeViewerTab = nextTab ? nextTab.id : '';
     }
 };
 
-const galleryViewerPageNumPlus: Mutation<State> = function (state: State, galleryId: string) {
-    let foundIndex = -1;
-    state.viewers.forEach((gallery: Gallery, index: number) => {
-        if (gallery.id === galleryId) {
-            foundIndex = index;
-        }
-    });
+const galleryPageNumPlus: Mutation<State> = function (state: State, galleryId: string) {
+    let gallery: Gallery;
 
-    if (foundIndex !== -1) {
-        state.viewers[foundIndex].pageNum++;
+    if (galleryId === GALLERY_DEFAULT) {
+        gallery = state.gallery;
+    } else {
+        let {viewer} = getTargetViewerData(state, galleryId);
+        gallery = viewer;
     }
+
+    gallery.pageNum++;
 };
 
-const galleryViewerPageNumReset: Mutation<State> = function (state: State, galleryId: string) {
-    let foundIndex = -1;
-    state.viewers.forEach((gallery: Gallery, index: number) => {
-        if (gallery.id === galleryId) {
-            foundIndex = index;
-        }
-    });
+const galleryPageNumReset: Mutation<State> = function (state: State, galleryId: string) {
+    let gallery: Gallery;
 
-    if (foundIndex !== -1) {
-        state.viewers[foundIndex].pageNum = 0;
+    if (galleryId === GALLERY_DEFAULT) {
+        gallery = state.gallery;
+    } else {
+        let {viewer} = getTargetViewerData(state, galleryId);
+        gallery = viewer;
     }
+
+    gallery.pageNum = 0;
 };
 
-const galleryViewerPageNumSync: Mutation<State> = function (state: State, galleryId: string) {
-    let foundIndex = -1;
-    state.viewers.forEach((gallery: Gallery, index: number) => {
-        if (gallery.id === galleryId) {
-            foundIndex = index;
-        }
-    });
+const galleryPageNumSync: Mutation<State> = function (state: State, galleryId: string) {
+    let gallery: Gallery;
 
-    if (foundIndex !== -1) {
-        state.viewers[foundIndex].lastPageNum = state.viewers[foundIndex].pageNum;
+    if (galleryId === GALLERY_DEFAULT) {
+        gallery = state.gallery;
+    } else {
+        let {viewer} = getTargetViewerData(state, galleryId);
+        gallery = viewer;
     }
+
+    gallery.lastPageNum = gallery.pageNum;
+};
+
 };
 
 // Actions
@@ -105,9 +102,9 @@ export const Store: Module<State, {}> = {
     mutations: {
         galleryViewerTabAdd,
         galleryViewerTabRemove,
-        galleryViewerPageNumPlus,
-        galleryViewerPageNumReset,
-        galleryViewerPageNumSync,
+        galleryPageNumPlus,
+        galleryPageNumReset,
+        galleryPageNumSync,
     },
     actions: {
         // fetchImages
@@ -115,6 +112,18 @@ export const Store: Module<State, {}> = {
 };
 
 // Utility
+const getTargetViewerData = function (state: State, galleryId: string) {
+    let foundIndex = -1;
+    state.viewers.forEach((gallery: Gallery, index: number) => {
+        if (gallery.id === galleryId) {
+            foundIndex = index;
+        }
+    });
+    return {
+        viewer: state.viewers[foundIndex],
+        index: foundIndex
+    };
+};
 
 export const createNewGallery = function (type: string, name: string, files: Array<GalleryImage | LocalFile>) {
     return {
