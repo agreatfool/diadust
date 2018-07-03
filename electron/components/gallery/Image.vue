@@ -15,11 +15,7 @@
     import * as Konva from 'konva';
     import {ViewingImageQuery} from "./Store";
     import {clipboard, nativeImage} from 'electron';
-
-    interface MultiKeyCombo {
-        keys: Array<string>;
-        event: (event?: KeyboardEvent) => any;
-    }
+    import {registerMultiKeyCombo, MultiKeyCombo} from '../../lib/Keyboard';
 
     @Component
     export default class ImageViewer extends Vue {
@@ -46,75 +42,86 @@
             this.keypress = new KeypressListener();
             this.keypressCombos = [
                 {
-                    keys: ['esc'], // reset image, leave image viewer mode
-                    event: () => {
+                    mutliKey: ['esc', 'cmd w', 'ctrl w'], // reset image, leave image viewer mode
+                    event: (e: KeyboardEvent) => {
+                        e.preventDefault();
                         this.$store.commit('gallerySetViewingImage', {
                             filePath: '',
                             galleryId: '',
                         } as ViewingImageQuery); // reset image
-                    }
+                    },
+                    is_solitary: true,
                 } as MultiKeyCombo,
                 {
-                    keys: ['cmd 1', 'ctrl 1'], // reset scale
+                    mutliKey: ['cmd 1', 'ctrl 1'], // reset scale
                     event: () => {
                         this.zoomReset();
-                    }
+                    },
+                    is_solitary: true,
                 } as MultiKeyCombo,
                 {
-                    keys: ['cmd 2', 'ctrl 2'], // fit window
+                    mutliKey: ['cmd 2', 'ctrl 2'], // fit window
                     event: () => {
                         this.imgFitWindow();
-                    }
+                    },
+                    is_solitary: true,
                 } as MultiKeyCombo,
                 {
-                    keys: ['cmd 3', 'ctrl 3'], // fit width
+                    mutliKey: ['cmd 3', 'ctrl 3'], // fit width
                     event: () => {
                         this.imgFitWidth();
-                    }
+                    },
+                    is_solitary: true,
                 } as MultiKeyCombo,
                 {
-                    keys: ['cmd 4', 'ctrl 4'], // fit height
+                    mutliKey: ['cmd 4', 'ctrl 4'], // fit height
                     event: () => {
                         this.imgFitHeight();
-                    }
+                    },
+                    is_solitary: true,
                 } as MultiKeyCombo,
                 {
-                    keys: ['cmd 5', 'ctrl 5'], // center window
+                    mutliKey: ['cmd 5', 'ctrl 5'], // center window
                     event: () => {
                         this.imgCenteringBoth();
                     }
                 } as MultiKeyCombo,
                 {
-                    keys: ['cmd 6', 'ctrl 6'], // center x
+                    mutliKey: ['cmd 6', 'ctrl 6'], // center x
                     event: () => {
                         this.imgCenteringX();
-                    }
+                    },
+                    is_solitary: true,
                 } as MultiKeyCombo,
                 {
-                    keys: ['cmd 7', 'ctrl 7'], // center y
+                    mutliKey: ['cmd 7', 'ctrl 7'], // center y
                     event: () => {
                         this.imgCenteringY();
-                    }
+                    },
+                    is_solitary: true,
                 } as MultiKeyCombo,
                 {
-                    keys: ['pageup'], // previous image
+                    mutliKey: ['pageup'], // previous image
                     event: () => {
                         this.$store.commit('galleryPrevImage');
-                    }
+                    },
+                    is_solitary: true,
                 } as MultiKeyCombo,
                 {
-                    keys: ['pagedown'], // next image
+                    mutliKey: ['pagedown'], // next image
                     event: () => {
                         this.$store.commit('galleryNextImage');
-                    }
+                    },
+                    is_solitary: true,
                 } as MultiKeyCombo,
                 {
-                    keys: ['cmd c', 'ctrl c'], // copy image
+                    mutliKey: ['cmd c', 'ctrl c'], // copy image
                     event: () => {
                         clipboard.writeImage(
                             nativeImage.createFromPath(this.$store.state.Gallery.viewingImagePath)
                         );
-                    }
+                    },
+                    is_solitary: true,
                 } as MultiKeyCombo,
             ];
         }
@@ -326,14 +333,7 @@
                 this.image.addEventListener('load', this.onImageLoad, false);
                 this.image.src = this.$store.state.Gallery.viewingImagePath;
 
-                this.keypressCombos.forEach((combo: MultiKeyCombo) => {
-                    combo.keys.forEach((key: string) => {
-                        this.keypress.register_combo({
-                            keys: key,
-                            on_keyup: combo.event,
-                        } as Combo);
-                    });
-                });
+                registerMultiKeyCombo(this.keypress, this.keypressCombos);
 
                 window.addEventListener('resize', this.setDimension);
                 window.addEventListener('mousewheel', this.onMouseWheel);

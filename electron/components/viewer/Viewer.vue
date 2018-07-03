@@ -39,6 +39,8 @@
 
 <script lang="ts">
     import {Component, Prop, Vue} from "vue-property-decorator";
+    import {Combo, Listener as KeypressListener} from 'keypress.js';
+    import {registerMultiKeyCombo, MultiKeyCombo} from '../../lib/Keyboard';
 
     import Gallery from '../gallery/Gallery.vue';
 
@@ -52,10 +54,41 @@
             default: ''
         }) galleryId: string;
 
+        private keypress: KeypressListener;
+        private keypressCombos: Array<MultiKeyCombo>;
+
         private beLazy: boolean = true;
 
         constructor() {
             super();
+
+            this.keypress = new KeypressListener();
+            this.keypressCombos = [
+                {
+                    mutliKey: ['cmd w', 'ctrl w'], // close tab
+                    event: () => {
+                        if (this.$store.state.Gallery.viewingImagePath !== '') {
+                            return; // image viewing page, do not handle "cmd w" here
+                        }
+                        this.$store.commit('galleryViewerTabRemove');
+                    },
+                    is_solitary: true,
+                } as MultiKeyCombo,
+                {
+                    mutliKey: ['ctrl tab'], // next tab
+                    event: () => {
+                        this.$store.commit('galleryViewerTabNext');
+                    },
+                    is_solitary: true,
+                } as MultiKeyCombo,
+                {
+                    mutliKey: ['ctrl shift tab'], // previous tab
+                    event: () => {
+                        this.$store.commit('galleryViewerTabPrev');
+                    },
+                    is_solitary: true,
+                } as MultiKeyCombo,
+            ];
         }
 
         truncateLabelStr(str: string) {
@@ -64,6 +97,14 @@
 
         tabRemove(name: string) {
             this.$store.commit('galleryViewerTabRemove', name);
+        }
+
+        mounted() {
+            registerMultiKeyCombo(this.keypress, this.keypressCombos);
+        }
+
+        beforeDestroy() {
+            this.keypress.reset();
         }
     }
 </script>

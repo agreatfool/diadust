@@ -37,13 +37,43 @@ const galleryViewerTabAdd: Mutation<State> = function (state: State, gallery: Ga
     state.activeViewerTab = gallery.id;
 };
 
-const galleryViewerTabRemove: Mutation<State> = function (state: State, galleryId: string) {
+const galleryViewerTabRemove: Mutation<State> = function (state: State, galleryId?: string) {
+    if (galleryId === undefined) {
+        galleryId = state.activeViewerTab;
+    }
+
     let {index} = getTargetViewerData(state, galleryId);
 
     if (index !== -1) {
         let nextTab = state.viewers[index + 1] || state.viewers[index - 1];
         state.viewers.splice(index, 1);
         state.activeViewerTab = nextTab ? nextTab.id : '';
+    }
+};
+
+const galleryViewerTabNext: Mutation<State> = function (state: State) {
+    let {index} = getTargetViewerData(state, state.activeViewerTab);
+
+    if (index !== -1) {
+        let nextIndex = index + 1;
+        if (nextIndex >= state.viewers.length) {
+            nextIndex = 0;
+        }
+
+        state.activeViewerTab = state.viewers[nextIndex].id;
+    }
+};
+
+const galleryViewerTabPrev: Mutation<State> = function (state: State) {
+    let {index} = getTargetViewerData(state, state.activeViewerTab);
+
+    if (index !== -1) {
+        let nextIndex = index - 1;
+        if (nextIndex < 0) {
+            nextIndex = state.viewers.length - 1;
+        }
+
+        state.activeViewerTab = state.viewers[nextIndex].id;
     }
 };
 
@@ -193,6 +223,8 @@ export const Store: Module<State, {}> = {
     mutations: {
         galleryViewerTabAdd,
         galleryViewerTabRemove,
+        galleryViewerTabNext,
+        galleryViewerTabPrev,
         galleryPageNumPlus,
         galleryPageNumReset,
         galleryPageNumSync,
