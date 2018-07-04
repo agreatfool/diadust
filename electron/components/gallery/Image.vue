@@ -299,6 +299,12 @@
 
             this.konvaLayer.add(this.konvaImage);
             this.konvaStage.draw();
+
+            // FIXME shall only do adjust via config
+            if (this.image.width > this.canvasWidth || this.image.height > this.canvasHeight) {
+                this.imgFitWindow();
+            }
+            this.imgCenteringX();
         }
 
         setDimension() {
