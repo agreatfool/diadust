@@ -16,6 +16,7 @@ export const ValidDropType = [
     'image/jpeg',
     'image/png',
     'image/webp',
+    'image/gif',
     'application/zip',
     'application/x-rar',
     'application/x-rar-compressed',
@@ -23,7 +24,7 @@ export const ValidDropType = [
     'application/x-7z-compressed'
 ];
 
-export const ValidImageType = ValidDropType.slice(0, 4); // end not included
+export const ValidImageType = ValidDropType.slice(0, 5); // end not included
 export const ValidArchiveType = ValidDropType.slice(4);
 
 export interface LocalFile {

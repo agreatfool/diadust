@@ -132,10 +132,10 @@ const checkDropFileIsDir = function (file: File) {
 export const dropFilesToGalleryType = function (dirs: DropFiles): Array<Gallery> {
     let galleries = [] as Array<Gallery>;
 
-    for (let key in dirs) {
-        let type = key === 'root' ? GALLERY_TYPE_FILES : GALLERY_TYPE_DIR;
+    for (let name in dirs) {
+        let type = name === 'root' ? GALLERY_TYPE_FILES : GALLERY_TYPE_DIR;
 
-        const files = dirs[key] as Array<LocalFile>;
+        const files = dirs[name] as Array<LocalFile>;
 
         // only has one file && file type is archive
         if (files.length === 1) {
@@ -145,7 +145,7 @@ export const dropFilesToGalleryType = function (dirs: DropFiles): Array<Gallery>
             }
         }
 
-        galleries.push(createNewGallery(type, type === GALLERY_TYPE_DIR ? key : files[0].path, files));
+        galleries.push(createNewGallery(type, type === GALLERY_TYPE_DIR ? name : files[0].path, files));
     }
 
     return galleries;

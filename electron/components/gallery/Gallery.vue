@@ -93,7 +93,7 @@
         @Prop({
             required: false,
             default: 50
-        }) itemsPerFetch: number;
+        }) itemsPerPage: number;
 
         private isOutofData: boolean = false;
         private isLoading: boolean = false;
@@ -174,11 +174,11 @@
             let startPos: number;
             let endPos: number;
             if (initialized) {
-                startPos = this.itemsPerFetch * pageNum;
-                endPos = this.itemsPerFetch * (pageNum + 1);
+                startPos = this.itemsPerPage * pageNum;
+                endPos = this.itemsPerPage * (pageNum + 1);
             } else {
                 startPos = 0;
-                endPos = this.itemsPerFetch * lastPageNum;
+                endPos = this.itemsPerPage * lastPageNum;
             }
 
             let fetched: Array<LocalFile> = files.slice(startPos, endPos);
@@ -188,7 +188,7 @@
 
             const handleDataByPage = async () => {
                 return new Promise((resolve) => {
-                    let spliced = fetched.splice(0, this.itemsPerFetch);
+                    let spliced = fetched.splice(0, this.itemsPerPage);
                     this.files = [...this.files, ...spliced];
 
                     if (fetched.length > 0) {

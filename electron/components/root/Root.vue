@@ -78,6 +78,7 @@
 
 <script lang="ts">
     import {Component, Vue} from "vue-property-decorator";
+    import {Combo, Listener as KeypressListener} from 'keypress.js';
 
     import {router} from './Router';
     import {store} from './Store';
@@ -88,6 +89,7 @@
     import ImageViewer from '../gallery/Image.vue';
 
     import {DropFiles, dropFilesToGalleryType, handleDropEvent} from '../../lib/Drop';
+    import {registerMultiKeyCombo, MultiKeyCombo} from '../../lib/Keyboard';
 
     @Component({
         router,
@@ -104,6 +106,24 @@
         private dynamicMainHeight: number = 0;
 
         private topTooltipDelay = 500; // ms
+
+        private keypress: KeypressListener;
+        private keypressCombos: Array<MultiKeyCombo>;
+
+        constructor() {
+            super();
+
+            this.keypress = new KeypressListener();
+            this.keypressCombos = [
+                {
+                    mutliKey: ['cmd w', 'ctrl w'], // reset image, leave image viewer mode
+                    event: (e: KeyboardEvent) => {
+                        e.preventDefault();
+                    },
+                    is_solitary: true,
+                } as MultiKeyCombo,
+            ];
+        }
 
         // FIXME 历史状态回溯，以及绑定返回前进按钮
 
@@ -149,13 +169,14 @@
 
         mounted() {
             this.$nextTick(() => {
+                registerMultiKeyCombo(this.keypress, this.keypressCombos);
                 window.addEventListener('resize', this.setDynamicMainHeight);
-
                 this.setDynamicMainHeight(); // init
             });
         }
 
         beforeDestroy() {
+            this.keypress.reset();
             window.removeEventListener('resize', this.setDynamicMainHeight);
         }
     }
