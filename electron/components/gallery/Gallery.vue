@@ -95,6 +95,8 @@
             default: 50
         }) itemsPerPage: number;
 
+        // FIXME 舍弃无限滚动模式，使用翻页模式，无限滚动在图片量大了之后有诸多性能之类的问题
+
         private isOutofData: boolean = false;
         private isLoading: boolean = false;
         private isMounted: boolean = false;
