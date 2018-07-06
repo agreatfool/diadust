@@ -317,6 +317,10 @@
         mounted() {
             this.vueWatcher = this.$store.watch(() => this.$store.state.Gallery.viewingImagePath,
                 () => {
+                    this.konvaLayer.removeChildren();
+
+                    this.image = new Image();
+                    this.image.addEventListener('load', this.onImageLoad, false);
                     this.image.src = this.$store.state.Gallery.viewingImagePath;
                 });
 
@@ -329,6 +333,7 @@
                     height: this.canvasHeight,
                 });
                 this.konvaLayer = new Konva.Layer();
+                this.konvaLayer.clearBeforeDraw(true);
                 this.konvaStage.add(this.konvaLayer);
 
                 this.image = new Image();
