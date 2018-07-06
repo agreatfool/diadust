@@ -17,7 +17,6 @@ export interface Gallery {
     type: string; // possible value: 'gallery' | 'files' | 'directory' | 'archive'
     name: string; // possible value: 'gallery' | files: first file path | dir: dir path | archive: archive file path
     files: Array<GalleryImage | LocalFile>;
-    lastPageNum: number; // last pagination id number, used to recover page status rendering
     pageNum: number; // current page number, used to fetch data
     imageNum: number; // current viewing image position number
     releasedFiles?: Array<GalleryImage | LocalFile>; // possibly exists when archive type, released tmp files
@@ -32,6 +31,7 @@ export interface State {
 }
 
 // Mutations
+// Viewer Mutations
 const galleryViewerTabAdd: Mutation<State> = function (state: State, gallery: Gallery) {
     state.viewers.push(gallery);
     state.activeViewerTab = gallery.id;
@@ -77,13 +77,18 @@ const galleryViewerTabPrev: Mutation<State> = function (state: State) {
     }
 };
 
-const galleryPageNumPlus: Mutation<State> = function (state: State, galleryId: string) {
+// Gallery Mutations
+export interface PageNumSet {
+    galleryId: string;
+    pageNum: number;
+}
+const galleryPageNumSet: Mutation<State> = function (state: State, query: PageNumSet) {
     let gallery: Gallery;
 
-    if (galleryId === GALLERY_DEFAULT) {
+    if (query.galleryId === GALLERY_DEFAULT) {
         gallery = state.gallery;
     } else {
-        let {viewer} = getTargetViewerData(state, galleryId);
+        let {viewer} = getTargetViewerData(state, query.galleryId);
         gallery = viewer;
     }
 
@@ -91,41 +96,7 @@ const galleryPageNumPlus: Mutation<State> = function (state: State, galleryId: s
         return;
     }
 
-    gallery.pageNum++;
-};
-
-const galleryPageNumReset: Mutation<State> = function (state: State, galleryId: string) {
-    let gallery: Gallery;
-
-    if (galleryId === GALLERY_DEFAULT) {
-        gallery = state.gallery;
-    } else {
-        let {viewer} = getTargetViewerData(state, galleryId);
-        gallery = viewer;
-    }
-
-    if (!gallery) {
-        return;
-    }
-
-    gallery.pageNum = 0;
-};
-
-const galleryPageNumSync: Mutation<State> = function (state: State, galleryId: string) {
-    let gallery: Gallery;
-
-    if (galleryId === GALLERY_DEFAULT) {
-        gallery = state.gallery;
-    } else {
-        let {viewer} = getTargetViewerData(state, galleryId);
-        gallery = viewer;
-    }
-
-    if (!gallery) {
-        return;
-    }
-
-    gallery.lastPageNum = gallery.pageNum;
+    gallery.pageNum = query.pageNum;
 };
 
 export interface ViewingImageQuery {
@@ -225,9 +196,7 @@ export const Store: Module<State, {}> = {
         galleryViewerTabRemove,
         galleryViewerTabNext,
         galleryViewerTabPrev,
-        galleryPageNumPlus,
-        galleryPageNumReset,
-        galleryPageNumSync,
+        galleryPageNumSet,
         gallerySetViewingImage,
         galleryNextImage,
         galleryPrevImage,
@@ -257,7 +226,6 @@ export const createNewGallery = function (type: string, name: string, files: Arr
         type: type,
         name: name,
         files: files,
-        lastPageNum: 0,
         pageNum: 0,
         imageNum: 0,
     } as Gallery;

@@ -3976,10 +3976,6 @@ throttleit@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/throttleit/-/throttleit-0.0.2.tgz#cfedf88e60c00dd9697b61fdd2a8343a9b680eaf"
 
-throttleit@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/throttleit/-/throttleit-1.0.0.tgz#9e785836daf46743145a5984b6268d828528ac6c"
-
 through2@~0.2.3:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/through2/-/through2-0.2.3.tgz#eb3284da4ea311b6cc8ace3653748a52abf25a3f"
@@ -4257,12 +4253,6 @@ vue-masonry@0.11.1:
     masonry latest
     masonry-layout "4.2.0"
     vue "^2.0.0"
-
-vue-mugen-scroll@0.2.5:
-  version "0.2.5"
-  resolved "https://registry.yarnpkg.com/vue-mugen-scroll/-/vue-mugen-scroll-0.2.5.tgz#a69c2e2e26bbd8444da88bc457f8b9d543364924"
-  dependencies:
-    throttleit "^1.0.0"
 
 vue-property-decorator@6.1.0:
   version "6.1.0"

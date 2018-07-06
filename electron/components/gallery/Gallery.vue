@@ -1,5 +1,5 @@
 <template>
-    <div class="gallery" ref="ref"
+    <div class="gallery"
          v-on:dragover.prevent
          v-on:drop="drop">
         <div v-masonry
@@ -15,13 +15,15 @@
                 <img class="grid-item-img" :src="`file://${file.path}`" @click="imgClick" alt="">
             </div>
         </div>
-        <mugen-scroll
-                class="mugen"
-                :handler="fetchData"
-                :should-handle="shouldHandleScroll"
-                scroll-container="ref">
-            {{isOutofData ? `no more data ... ${files.length}` : `loading ... ${files.length}`}}
-        </mugen-scroll>
+        <el-pagination
+                class="pagination"
+                v-if="shallDisplayPagination()"
+                :current-page.sync="currentPageNum"
+                @current-change="handlePageChanged"
+                :page-size="itemsPerPage"
+                layout="prev, pager, next, jumper"
+                :total="totalItemsCount">
+        </el-pagination>
     </div>
 </template>
 
@@ -58,48 +60,39 @@
         width: 10px;
     }
 
-    .mugen {
-        position: relative;
-        padding: 10px;
-        font-size: 18px;
-        background-color: #F0F0F0;
+    .pagination {
+        float: right;
+        margin-right: 20px;
     }
 </style>
 
 <script lang="ts">
     import {Component, Prop, Vue} from "vue-property-decorator";
     import fetch from 'node-fetch';
-    import MugenScroll from 'vue-mugen-scroll';
 
     import {VueMasonryPlugin} from '../plugin/Masonry';
-    import {Gallery as GalleryState, ViewingImageQuery} from './Store';
+    import {Gallery as GalleryState, PageNumSet, ViewingImageQuery} from './Store';
     import {LocalFile} from '../../model/Drop';
     import {GalleryImage} from '../../model/Image';
     import {convertSrcFilePathToLocalFilePath} from '../../lib/File';
 
     Vue.use(VueMasonryPlugin);
 
-    @Component({
-        components: {
-            'mugen-scroll': MugenScroll,
-        }
-    })
+    @Component
     export default class Gallery extends Vue {
         @Prop({
             required: false,
             default: 'gallery'
         }) id: string; // gallery id, mapping to $store.state.Gallery.viewers{id, ...}
-
         @Prop({
             required: false,
-            default: 50
+            default: 100
         }) itemsPerPage: number;
 
-        // FIXME 舍弃无限滚动模式，使用翻页模式，无限滚动在图片量大了之后有诸多性能之类的问题
-
-        private isOutofData: boolean = false;
-        private isLoading: boolean = false;
-        private isMounted: boolean = false;
+        private currentPageNum: number = 0;
+        private totalItemsCount: number = 0;
+        private pageNumChangeList: Array<number> = [];
+        private fetchingData: boolean = false;
 
         private files: Array<GalleryImage | LocalFile> = [];
 
@@ -107,42 +100,47 @@
             super();
         }
 
-        get shouldHandleScroll() {
-            if (this.isOutofData) {
-                return false; // run out of data, never handle scroll again
-            }
-
-            return !this.isLoading; // handle if not loading
+        shallDisplayPagination() {
+            return this.totalItemsCount > this.itemsPerPage && this.files.length > 0;
         }
 
-        async fetchData() {
+        handlePageChanged(pageNum: number) {
+            pageNum--; // pageNum in pagination is from 1, shall be from 0 in programming
+            this.pageNumChangeList.push(pageNum);
+            this.handleAsyncPageChanged();
+        }
+
+        handleAsyncPageChanged() {
+            if (this.fetchingData || this.pageNumChangeList.length === 0) {
+                return; // already handling || nothing to handle
+            }
+
+            this.fetchingData = true;
+            let targetPageNum = this.pageNumChangeList.shift();
+            this.fetchData(targetPageNum).then(() => {
+                this.fetchingData = false;
+                this.handleAsyncPageChanged();
+            });
+        }
+
+        async fetchData(pageNum?: number) {
             if (this.id === 'gallery') {
-                // await this.fetchGallery();
-                await this.fetchLocal();
+                // await this.fetchGallery(pageNum);
+                await this.fetchLocal(pageNum);
             } else {
-                await this.fetchLocal();
+                await this.fetchLocal(pageNum);
             }
         }
 
         mounted() {
-            this.isMounted = true;
+            this.fetchData().then(_ => _);
         }
 
         beforeDestroy() {
-            const gallery: GalleryState = this.getCurrentGalleryState() as GalleryState;
 
-            if (gallery === null || (gallery.pageNum === 1 && gallery.lastPageNum === 0)) {
-                // only loaded data once on page initialized, shall not sync lastPageNum,
-                // since next page load shall also be treated as new page init,
-                // also do't forget reset current page number
-                this.$store.commit('galleryPageNumReset', this.id); // reset
-                return;
-            }
-
-            this.$store.commit('galleryPageNumSync', this.id); // sync page num when leave
         }
 
-        async fetchGallery() {
+        async fetchGallery(pageNum?: number) {
             // this.isLoading = true;
             // console.log('start fetching');
             //
@@ -157,60 +155,34 @@
             //     });
         }
 
-        async fetchLocal() {
-            this.isLoading = true;
-
+        async fetchLocal(pageNum?: number) {
             const gallery: GalleryState = this.getCurrentGalleryState() as GalleryState;
             if (gallery === null) {
-                console.log('fetchLocal, no gallery found');
-                this.isOutofData = true;
                 return;
             }
 
-            let lastPageNum: number = gallery.lastPageNum;
-            let pageNum: number = gallery.pageNum;
-            let files: Array<LocalFile> = gallery.files as Array<LocalFile>;
-
-            const initialized = this.isMounted || (lastPageNum === 0 && pageNum === 0);
-
-            let startPos: number;
-            let endPos: number;
-            if (initialized) {
-                startPos = this.itemsPerPage * pageNum;
-                endPos = this.itemsPerPage * (pageNum + 1);
-            } else {
-                startPos = 0;
-                endPos = this.itemsPerPage * lastPageNum;
+            if (pageNum === undefined) {
+                pageNum = gallery.pageNum;
             }
+            let totalFiles: Array<LocalFile> = gallery.files as Array<LocalFile>;
+            this.totalItemsCount = totalFiles.length;
 
-            let fetched: Array<LocalFile> = files.slice(startPos, endPos);
-            if (fetched.length < (endPos - startPos)) {
-                this.isOutofData = true;
+            let maxPossiblePageNum = Math.floor(this.totalItemsCount / this.itemsPerPage);
+            if (pageNum > maxPossiblePageNum) {
+                pageNum = maxPossiblePageNum;
+            } else if (pageNum < 0) {
+                pageNum = 0;
             }
+            this.currentPageNum = pageNum + 1; // programming => readable
 
-            const handleDataByPage = async () => {
-                return new Promise((resolve) => {
-                    let spliced = fetched.splice(0, this.itemsPerPage);
-                    this.files = [...this.files, ...spliced];
+            let startPos: number = this.itemsPerPage * pageNum;
+            let endPos: number = this.itemsPerPage * (pageNum + 1);
+            this.files = totalFiles.slice(startPos, endPos);
 
-                    if (fetched.length > 0) {
-                        setTimeout(() => {
-                            resolve();
-                        }, 100); // 100ms
-                    } else {
-                        resolve();
-                    }
-                });
-            };
-            while (fetched.length > 0) {
-                await handleDataByPage();
-            }
-
-            if (!this.isOutofData && initialized) { // only add page number if data loading is doing after page mounted, means not initializing status
-                this.$store.commit('galleryPageNumPlus', this.id);
-            }
-
-            this.isLoading = false;
+            this.$store.commit('galleryPageNumSet', {
+                galleryId: this.id,
+                pageNum: pageNum,
+            } as PageNumSet);
         }
 
         drop(event: DragEvent) {
