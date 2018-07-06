@@ -72,11 +72,12 @@
     import {Combo, Listener as KeypressListener} from 'keypress.js';
 
     import {VueMasonryPlugin} from '../plugin/Masonry';
-    import {Gallery as GalleryState, PageNumSet, ViewingImageQuery} from './Store';
+    import {Gallery as GalleryState, PageNumSet} from './Store';
     import {LocalFile} from '../../model/Drop';
     import {GalleryImage} from '../../model/Image';
     import {convertSrcFilePathToLocalFilePath} from '../../lib/File';
     import {registerMultiKeyCombo, MultiKeyCombo} from '../../lib/Keyboard';
+    import {EventBus} from "../../lib/Event";
 
     Vue.use(VueMasonryPlugin);
 
@@ -183,13 +184,57 @@
             }
         }
 
+        onImageViewingNext() {
+            let foundIndex: number = -1;
+            this.files.forEach((file: LocalFile | GalleryImage, index: number) => {
+                if (file.path === this.$store.state.Gallery.viewingImagePath) {
+                    foundIndex = index;
+                }
+            });
+
+            if (foundIndex === -1) {
+                return; // not found
+            }
+
+            let nextIndex = foundIndex + 1;
+            if (nextIndex > (this.files.length - 1)) {
+                nextIndex = 0;
+            }
+
+            this.$store.commit('galleryViewingImageSet', this.files[nextIndex].path);
+        }
+
+        onImageViewingPrev() {
+            let foundIndex: number = -1;
+            this.files.forEach((file: LocalFile | GalleryImage, index: number) => {
+                if (file.path === this.$store.state.Gallery.viewingImagePath) {
+                    foundIndex = index;
+                }
+            });
+
+            if (foundIndex === -1) {
+                return; // not found
+            }
+
+            let nextIndex = foundIndex - 1;
+            if (nextIndex < 0) {
+                nextIndex = this.files.length - 1;
+            }
+
+            this.$store.commit('galleryViewingImageSet', this.files[nextIndex].path);
+        }
+
         mounted() {
             registerMultiKeyCombo(this.keypress, this.keypressCombos);
+            EventBus.$on('img-viewing-next', this.onImageViewingNext);
+            EventBus.$on('img-viewing-prev', this.onImageViewingPrev);
             this.fetchData().then(_ => _);
         }
 
         beforeDestroy() {
             this.keypress.reset();
+            EventBus.$off('img-viewing-next', this.onImageViewingNext);
+            EventBus.$off('img-viewing-prev', this.onImageViewingPrev);
         }
 
         async fetchGallery(pageNum?: number) {
@@ -251,10 +296,7 @@
             // TODO 查看图片
             const filePath = (event.srcElement as any).src;
             if (filePath) {
-                this.$store.commit('gallerySetViewingImage', {
-                    filePath: convertSrcFilePathToLocalFilePath(filePath),
-                    galleryId: this.id
-                } as ViewingImageQuery);
+                this.$store.commit('galleryViewingImageSet', convertSrcFilePathToLocalFilePath(filePath));
             }
         }
 

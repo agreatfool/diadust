@@ -13,9 +13,9 @@
     import {Component, Vue} from "vue-property-decorator";
     import {Combo, Listener as KeypressListener} from 'keypress.js';
     import * as Konva from 'konva';
-    import {ViewingImageQuery} from "./Store";
     import {clipboard, nativeImage} from 'electron';
     import {registerMultiKeyCombo, MultiKeyCombo} from '../../lib/Keyboard';
+    import {EventBus} from "../../lib/Event";
 
     @Component
     export default class ImageViewer extends Vue {
@@ -44,10 +44,7 @@
                 {
                     mutliKey: ['esc', 'cmd w', 'ctrl w'], // reset image, leave image viewer mode
                     event: () => {
-                        this.$store.commit('gallerySetViewingImage', {
-                            filePath: '',
-                            galleryId: '',
-                        } as ViewingImageQuery); // reset image
+                        this.$store.commit('galleryViewingImageSet', ''); // reset image
                     },
                     is_solitary: true,
                 } as MultiKeyCombo,
@@ -102,14 +99,14 @@
                 {
                     mutliKey: ['pageup'], // previous image
                     event: () => {
-                        this.$store.commit('galleryPrevImage');
+                        EventBus.$emit('img-viewing-prev');
                     },
                     is_solitary: true,
                 } as MultiKeyCombo,
                 {
                     mutliKey: ['pagedown'], // next image
                     event: () => {
-                        this.$store.commit('galleryNextImage');
+                        EventBus.$emit('img-viewing-next');
                     },
                     is_solitary: true,
                 } as MultiKeyCombo,
