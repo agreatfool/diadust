@@ -68,9 +68,8 @@
                     mutliKey: ['cmd w', 'ctrl w'], // close tab
                     event: () => {
                         if (this.$store.state.Gallery.viewingImagePath !== '') {
-                            return; // image viewing page, do not handle "cmd w" here
+                            return; // image viewing, do not handle "cmd w" here
                         }
-                        // FIXME e.stopPropagation() 尝试用这个来阻止事件冒泡
                         this.$store.commit('galleryViewerTabRemove');
                     },
                     is_solitary: true,

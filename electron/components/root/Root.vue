@@ -119,6 +119,7 @@
                     mutliKey: ['cmd w', 'ctrl w'], // reset image, leave image viewer mode
                     event: (e: KeyboardEvent) => {
                         e.preventDefault();
+                        e.stopPropagation();
                     },
                     is_solitary: true,
                 } as MultiKeyCombo,

@@ -43,8 +43,7 @@
             this.keypressCombos = [
                 {
                     mutliKey: ['esc', 'cmd w', 'ctrl w'], // reset image, leave image viewer mode
-                    event: (e: KeyboardEvent) => {
-                        e.preventDefault();
+                    event: () => {
                         this.$store.commit('gallerySetViewingImage', {
                             filePath: '',
                             galleryId: '',
@@ -115,7 +114,7 @@
                     is_solitary: true,
                 } as MultiKeyCombo,
                 {
-                    mutliKey: ['cmd c', 'ctrl c'], // copy image
+                    mutliKey: ['cmd c', 'ctrl c'], // copy image to clipboard
                     event: () => {
                         clipboard.writeImage(
                             nativeImage.createFromPath(this.$store.state.Gallery.viewingImagePath)

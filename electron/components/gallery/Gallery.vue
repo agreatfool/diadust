@@ -69,12 +69,14 @@
 <script lang="ts">
     import {Component, Prop, Vue} from "vue-property-decorator";
     import fetch from 'node-fetch';
+    import {Combo, Listener as KeypressListener} from 'keypress.js';
 
     import {VueMasonryPlugin} from '../plugin/Masonry';
     import {Gallery as GalleryState, PageNumSet, ViewingImageQuery} from './Store';
     import {LocalFile} from '../../model/Drop';
     import {GalleryImage} from '../../model/Image';
     import {convertSrcFilePathToLocalFilePath} from '../../lib/File';
+    import {registerMultiKeyCombo, MultiKeyCombo} from '../../lib/Keyboard';
 
     Vue.use(VueMasonryPlugin);
 
@@ -96,8 +98,29 @@
 
         private files: Array<GalleryImage | LocalFile> = [];
 
+        private keypress: KeypressListener;
+        private keypressCombos: Array<MultiKeyCombo>;
+
         constructor() {
             super();
+
+            this.keypress = new KeypressListener();
+            this.keypressCombos = [
+                {
+                    mutliKey: ['.'], // '>' next page
+                    event: () => {
+                        this.onNextPage();
+                    },
+                    is_solitary: true,
+                } as MultiKeyCombo,
+                {
+                    mutliKey: [','], // '<' previous page
+                    event: () => {
+                        this.onPrevPage();
+                    },
+                    is_solitary: true,
+                } as MultiKeyCombo,
+            ];
         }
 
         shallDisplayPagination() {
@@ -123,6 +146,34 @@
             });
         }
 
+        onNextPage() {
+            const gallery: GalleryState = this.getCurrentGalleryState() as GalleryState;
+            if (gallery === null) {
+                return;
+            }
+
+            let maxPossiblePageNum = this.calcMaxPossiblePageNum();
+            let pageNum = gallery.pageNum + 1; // next page
+            if (pageNum > maxPossiblePageNum) {
+                pageNum = 0;
+            }
+            this.handlePageChanged(pageNum + 1); // programming => readable
+        }
+
+        onPrevPage() {
+            const gallery: GalleryState = this.getCurrentGalleryState() as GalleryState;
+            if (gallery === null) {
+                return;
+            }
+
+            let maxPossiblePageNum = this.calcMaxPossiblePageNum();
+            let pageNum = gallery.pageNum - 1; // prev page
+            if (pageNum < 0) {
+                pageNum = maxPossiblePageNum;
+            }
+            this.handlePageChanged(pageNum + 1); // programming => readable
+        }
+
         async fetchData(pageNum?: number) {
             if (this.id === 'gallery') {
                 // await this.fetchGallery(pageNum);
@@ -133,11 +184,12 @@
         }
 
         mounted() {
+            registerMultiKeyCombo(this.keypress, this.keypressCombos);
             this.fetchData().then(_ => _);
         }
 
         beforeDestroy() {
-
+            this.keypress.reset();
         }
 
         async fetchGallery(pageNum?: number) {
@@ -167,7 +219,7 @@
             let totalFiles: Array<LocalFile> = gallery.files as Array<LocalFile>;
             this.totalItemsCount = totalFiles.length;
 
-            let maxPossiblePageNum = Math.floor(this.totalItemsCount / this.itemsPerPage);
+            let maxPossiblePageNum = this.calcMaxPossiblePageNum();
             if (pageNum > maxPossiblePageNum) {
                 pageNum = maxPossiblePageNum;
             } else if (pageNum < 0) {
@@ -218,6 +270,10 @@
             });
 
             return gallery;
+        }
+
+        calcMaxPossiblePageNum() {
+            return Math.floor(this.totalItemsCount / this.itemsPerPage);
         }
     }
 </script>
