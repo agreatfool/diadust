@@ -5,18 +5,6 @@
                 <div v-on:dragover.prevent
                      v-on:drop="drop">
                     <el-row>
-                        <el-button-group>
-                            <el-tooltip content="Back" :open-delay="topTooltipDelay">
-                                <el-button label="back" @click="historyBack">
-                                    <i class="el-icon-arrow-left"></i>
-                                </el-button>
-                            </el-tooltip>
-                            <el-tooltip content="Forward" :open-delay="topTooltipDelay">
-                                <el-button @click="historyForward">
-                                    <i class="el-icon-arrow-right el-icon--right"></i>
-                                </el-button>
-                            </el-tooltip>
-                        </el-button-group>
                         <el-button-group style="margin-left: 10px;">
                             <el-tooltip content="Gallery" :open-delay="topTooltipDelay">
                                 <el-button @click="redirect('/gallery')">
@@ -124,16 +112,6 @@
                     is_solitary: true,
                 } as MultiKeyCombo,
             ];
-        }
-
-        // FIXME 历史状态回溯，以及绑定返回前进按钮
-
-        historyBack() {
-            alert('historyBack');
-        }
-
-        historyForward() {
-            alert('historyForward');
         }
 
         shallDisplayPlusButton() {

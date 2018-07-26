@@ -95,8 +95,8 @@
             return (str.length > 10) ? str.substr(0, 10 - 1) + '...' : str;
         }
 
-        tabRemove(name: string) {
-            this.$store.commit('galleryViewerTabRemove', name);
+        tabRemove(galleryId: string) {
+            this.$store.commit('galleryViewerTabRemove', galleryId);
         }
 
         mounted() {
